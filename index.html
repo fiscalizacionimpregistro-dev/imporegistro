@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gobernación del Valle - Modelo de Gobierno y Tablero de Control</title>
+    <title>Gobernación del Valle - Impuesto de Registro y Control de Liquidaciones</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -41,17 +41,17 @@
                 </div>
                 <div>
                     <h1 class="text-xs uppercase tracking-wider text-amber-300 font-semibold">GOBERNACIÓN DEL VALLE DEL CAUCA</h1>
-                    <h2 class="text-lg font-bold leading-tight">Modelo de Gobierno y Tablero de Control de Seguimiento Semanal</h2>
-                    <p class="text-xs text-slate-200">Indicadores de Gestión (KPIs) y Matriz de Control | Subgerencia de Fiscalización</p>
+                    <h2 class="text-lg font-bold leading-tight">Impuesto de Registro y Tablero de Control de Fiscalización</h2>
+                    <p class="text-xs text-slate-200">Base de Datos de Liquidaciones y Gestión de Expedientes</p>
                 </div>
             </div>
             <div class="flex items-center space-x-6 text-xs border-l border-white/20 pl-6">
                 <div class="text-right">
                     <span class="block text-slate-300">Fecha de corte</span>
-                    <span class="font-bold text-sm text-white">09/06/2026</span>
+                    <span class="font-bold text-sm text-white">06/10/2026</span>
                 </div>
                 <div class="bg-white/10 px-3 py-1.5 rounded text-amber-300 font-medium border border-amber-300/30">
-                    <i class="fa-solid fa-chart-line mr-1"></i> Más eficiencia, mejores resultados
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Subgerencia de Fiscalización
                 </div>
             </div>
         </div>
@@ -62,51 +62,47 @@
         
         <!-- Tarjetas de Resumen KPI Superiores -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <!-- Card 1 -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">Total Indicadores</p>
-                    <h3 class="text-2xl font-bold text-slate-800 mt-1">6</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">KPIs de seguimiento</p>
+                    <p class="text-xs text-slate-500 font-medium">Total Registros Cargados</p>
+                    <h3 id="statTotal" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Expedientes en sistema</p>
                 </div>
                 <div class="w-12 h-12 bg-vinotinto/10 rounded-lg flex items-center justify-center text-vinotinto">
-                    <i class="fa-solid fa-chart-pie text-xl"></i>
+                    <i class="fa-solid fa-folder-open text-xl"></i>
                 </div>
             </div>
 
-            <!-- Card 2 -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">Cumplimiento Total</p>
-                    <h3 class="text-2xl font-bold text-emerald-600 mt-1">100%</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">De los indicadores</p>
+                    <p class="text-xs text-slate-500 font-medium">Estado Aprobado</p>
+                    <h3 id="statAprobados" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Liquidaciones al día</p>
                 </div>
                 <div class="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center text-emerald-600">
                     <i class="fa-solid fa-circle-check text-xl"></i>
                 </div>
             </div>
 
-            <!-- Card 3 -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">Semanas Evaluadas</p>
-                    <h3 class="text-2xl font-bold text-blue-600 mt-1">6</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Semanas 2, 4, 6, 8</p>
+                    <p class="text-xs text-slate-500 font-medium">En Revisión / Trámite</p>
+                    <h3 id="statRevision" class="text-2xl font-bold text-amber-600 mt-1">0</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Requerimientos o informes</p>
                 </div>
-                <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-600">
-                    <i class="fa-solid fa-calendar-week text-xl"></i>
+                <div class="w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-600">
+                    <i class="fa-solid fa-clock text-xl"></i>
                 </div>
             </div>
 
-            <!-- Card 4 -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">Responsables</p>
-                    <h3 class="text-2xl font-bold text-purple-600 mt-1">6</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Equipos / Analistas</p>
+                    <p class="text-xs text-slate-500 font-medium">Pendientes de Pago</p>
+                    <h3 id="statPendientes" class="text-2xl font-bold text-rose-600 mt-1">0</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Procesos en fiscalización</p>
                 </div>
-                <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center text-purple-600">
-                    <i class="fa-solid fa-users text-xl"></i>
+                <div class="w-12 h-12 bg-rose-500/10 rounded-lg flex items-center justify-center text-rose-600">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
                 </div>
             </div>
         </div>
@@ -117,9 +113,322 @@
             <!-- Panel Lateral de Filtros -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center border-b pb-2">
-                    <i class="fa-solid fa-filter text-vinotinto mr-2"></i> Filtros de Control
+                    <i class="fa-solid fa-filter text-vinotinto mr-2"></i> Filtros de Gestión
                 </h3>
                 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Frecuencia</label>
-                    <select class="w-full text-xs bg
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Filtrar por Estado</label>
+                    <select id="filterEstado" onchange="filtrarPorEstado()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                        <option value="Todos">Todos los Estados</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="En Revisión">En Revisión</option>
+                        <option value="Pendiente">Pendiente</option>
+                    </select>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <button onclick="nuevoRegistroModal()" class="w-full bg-vinotinto hover:bg-vinotinto-dark text-white text-xs font-semibold py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>+ Nueva Liquidación</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard de Gráficos (3 Columnas) -->
+            <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <h4 class="text-xs font-bold text-slate-700 mb-3 flex items-center">
+                        <i class="fa-solid fa-chart-pie text-vinotinto mr-2"></i> Distribución de Estados de Liquidación
+                    </h4>
+                    <div class="h-48 relative flex items-center justify-center">
+                        <canvas id="chartEstados"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <h4 class="text-xs font-bold text-slate-700 mb-3 flex items-center">
+                        <i class="fa-solid fa-chart-bar text-vinotinto mr-2"></i> Volumen de Expedientes Procesados
+                    </h4>
+                    <div class="h-48">
+                        <canvas id="chartVolumen"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Datos con los 4 Campos del Google Sheet -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center">
+                        <i class="fa-solid fa-table text-vinotinto mr-2"></i> Registros de Impuesto de Registro
+                    </h3>
+                    <p class="text-xs text-slate-500">Listado oficial de archivos, liquidaciones e identificaciones de beneficiarios</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="searchInput" onkeyup="filtrarTabla()" placeholder="Buscar por Nombre, Liquidación o Beneficiario..." class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 w-72 focus:outline-none focus:ring-1 focus:ring-vinotinto">
+                    <button onclick="exportarCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Exportar CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left text-slate-600">
+                    <thead class="bg-vinotinto text-white uppercase text-[10px] tracking-wider">
+                        <tr>
+                            <th class="py-3 px-4">1. Nombre del Archivo o Carpeta</th>
+                            <th class="py-3 px-4">2. Número Liquidación</th>
+                            <th class="py-3 px-4">3. Beneficiario</th>
+                            <th class="py-3 px-4">4. Identificación Beneficiario</th>
+                            <th class="py-3 px-4 text-center">Estado</th>
+                            <th class="py-3 px-4 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody" class="divide-y divide-slate-100">
+                        <!-- Se llena dinámicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal para Agregar Nuevo Registro -->
+    <div id="modalRegistro" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center">
+                    <i class="fa-solid fa-folder-plus text-vinotinto mr-2"></i> Registrar Nueva Liquidación
+                </h3>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="formRegistro" onsubmit="guardarRegistro(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">1. Nombre del Archivo o Carpeta *</label>
+                    <input type="text" id="campoArchivo" required placeholder="Ej: BF 1001700000 MI-370-0000 Fraude" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">2. Número Liquidación *</label>
+                    <input type="text" id="campoLiquidacion" required placeholder="Ej: 1001700000" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">3. Beneficiario *</label>
+                        <input type="text" id="campoBeneficiario" required placeholder="Ej: BANCO DE OCCIDENTE S.A." class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">4. Identificación Beneficiario *</label>
+                        <input type="text" id="campoIdentificacion" required placeholder="Ej: 8903002794" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Estado del Registro</label>
+                    <select id="campoEstado" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="En Revisión">En Revisión</option>
+                        <option value="Pendiente">Pendiente</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover:bg-vinotinto-dark shadow">Guardar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lógica JavaScript con los Datos Integrados del Google Sheet -->
+    <script>
+        let registros = [
+            { archivo: "BF 1001699517 MI-373-4032 Fraude", liquidacion: "1001699517", beneficiario: "MUNICIPIO DE YOTOCO VALLE", identificacion: "8001005310", estado: "Aprobado" },
+            { archivo: "BF 1001699751 MI 370-933395 Fraude", liquidacion: "1001699751", beneficiario: "CLAUDIA BIBIANA POSADA ROLDAN", identificacion: "38600344", estado: "En Revisión" },
+            { archivo: "BF 1001699971 MI 370-890490 Fraude", liquidacion: "1001699971", beneficiario: "JOSE ALEJANDRO MENDOZA PATIÑO", identificacion: "1143848478", estado: "Aprobado" },
+            { archivo: "BF 1001700444 MI 370-867559 Fraude", liquidacion: "1001700444", beneficiario: "MARCOS CORTES", identificacion: "16776506", estado: "Pendiente" },
+            { archivo: "BF 1001701653 MI 378-167066 Fraude", liquidacion: "1001701653", beneficiario: "FRANCISMAR ELIZABETH QUIJANO OTALVARO", identificacion: "1088358360", estado: "Aprobado" },
+            { archivo: "BF 1001701731 MI 378-19835 Fraude", liquidacion: "1001701731", beneficiario: "OLGA LILIANA MEJIA LLANO", identificacion: "31168795", estado: "Aprobado" },
+            { archivo: "BF 1001702484 MI 370-323613 Fraude", liquidacion: "1001702484", beneficiario: "HORACIO LOPEZ", identificacion: "16886731", estado: "En Revisión" },
+            { archivo: "BF 1001702536 MI 382-29279 Fraude", liquidacion: "1001702536", beneficiario: "IRENE ALEXANDRA SASTRE GONZALEZ", identificacion: "1126965776", estado: "Aprobado" },
+            { archivo: "BF 1001702634 MI 370-456818 Fraude", liquidacion: "1001702634", beneficiario: "MARIA YUDY GRANADA DE MARTINEZ .", identificacion: "34540647", estado: "Aprobado" },
+            { archivo: "BF 1001704694 MI 370-27608 Fraude por no pago interes Mora", liquidacion: "1001704694", beneficiario: "RUBY DELGADO CABEZAS", identificacion: "31273165", estado: "Pendiente" },
+            { archivo: "BF 1001704882 MI 370-866325 Fraude", liquidacion: "1001704882", beneficiario: "ALBA MILENA CORTES SALAZAR", identificacion: "31951452", estado: "Aprobado" },
+            { archivo: "BF 1001705377-1001706084 MI 378-237955 Fraude", liquidacion: "1001705377", beneficiario: "CHRISTIAN SERNA", identificacion: "31993165", estado: "Aprobado" },
+            { archivo: "BF 1001705748 MI 370-903985 Fraude", liquidacion: "1001705748", beneficiario: "HOVER JHONATTAN BURBANO BARRERA", identificacion: "1130610113", estado: "En Revisión" },
+            { archivo: "BF 1001705988-1719724 MI 378-257542 Fraude", liquidacion: "1001705988", beneficiario: "LUZ LONDOÑO", identificacion: "29673179", estado: "Aprobado" },
+            { archivo: "BF 1001706042-1001734257 MI 378-257525 Fraude", liquidacion: "1001706042", beneficiario: "LUZ MERY RAYO", identificacion: "29343319", estado: "Aprobado" },
+            { archivo: "BF 1001706073 MI 370-746990 fraude", liquidacion: "1001706073", beneficiario: "ROSA INES SALGADO", identificacion: "48679363", estado: "Aprobado" },
+            { archivo: "BF 1001711719 MI 370-1080019 Fraude", liquidacion: "1001711719", beneficiario: "BANCO DE OCCIDENTE S.A.", identificacion: "8903002794", estado: "Aprobado" },
+            { archivo: "BF 1001707409 MI 370-618513 y 17 MI mas- Fraude", liquidacion: "1001707409", beneficiario: "CAYA & CIA S.A.S", identificacion: "8001911442", estado: "En Revisión" },
+            { archivo: "BF 1001706387 MI 382-23150 Fraude", liquidacion: "1001706387", beneficiario: "COLOMBIAN EXOTIC LANDS S.A.S.", identificacion: "9010700617", estado: "Aprobado" },
+            { archivo: "BF 1001735025 MI 378-257584 Fraude", liquidacion: "1001735025", beneficiario: "BANCO DAVIVIENDA S.A.", identificacion: "8600343137", estado: "Aprobado" }
+        ];
+
+        let chartEstadosInstance = null;
+        let chartVolumenInstance = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderizarTabla();
+            actualizarMetricas();
+            inicializarGraficos();
+        });
+
+        function renderizarTabla(datos = registros) {
+            const tbody = document.getElementById("tablaBody");
+            tbody.innerHTML = "";
+
+            datos.forEach((item, index) => {
+                let badgeColor = item.estado === 'Aprobado' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                                 item.estado === 'En Revisión' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                                 'bg-rose-100 text-rose-800 border-rose-200';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
+                        <td class="py-3 px-4 font-semibold text-slate-800 flex items-center">
+                            <i class="fa-regular fa-file-lines text-vinotinto mr-2"></i> ${item.archivo}
+                        </td>
+                        <td class="py-3 px-4 font-mono text-slate-700 font-medium">${item.liquidacion}</td>
+                        <td class="py-3 px-4 font-medium text-slate-800">${item.beneficiario}</td>
+                        <td class="py-3 px-4 font-mono text-slate-600">${item.identificacion}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeColor}">${item.estado}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="eliminarRegistro(${index})" class="text-rose-500 hover:text-rose-700 px-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function actualizarMetricas() {
+            const total = registros.length;
+            const aprobados = registros.filter(r => r.estado === "Aprobado").length;
+            const revision = registros.filter(r => r.estado === "En Revisión").length;
+            const pendientes = registros.filter(r => r.estado === "Pendiente").length;
+
+            document.getElementById("statTotal").innerText = total;
+            document.getElementById("statAprobados").innerText = aprobados;
+            document.getElementById("statRevision").innerText = revision;
+            document.getElementById("statPendientes").innerText = pendientes;
+        }
+
+        function nuevoRegistroModal() {
+            document.getElementById("modalRegistro").classList.remove("hidden");
+        }
+
+        function cerrarModal() {
+            document.getElementById("modalRegistro").classList.add("hidden");
+            document.getElementById("formRegistro").reset();
+        }
+
+        function guardarRegistro(e) {
+            e.preventDefault();
+            const nuevo = {
+                archivo: document.getElementById("campoArchivo").value,
+                liquidacion: document.getElementById("campoLiquidacion").value,
+                beneficiario: document.getElementById("campoBeneficiario").value,
+                identificacion: document.getElementById("campoIdentificacion").value,
+                estado: document.getElementById("campoEstado").value
+            };
+            registros.unshift(nuevo);
+            renderizarTabla();
+            actualizarMetricas();
+            actualizarGraficos();
+            cerrarModal();
+        }
+
+        function eliminarRegistro(index) {
+            if(confirm("¿Desea eliminar este registro de la base de datos?")) {
+                registros.splice(index, 1);
+                renderizarTabla();
+                actualizarMetricas();
+                actualizarGraficos();
+            }
+        }
+
+        function filtrarTabla() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtrados = registros.filter(r => 
+                r.archivo.toLowerCase().includes(query) ||
+                r.liquidacion.toLowerCase().includes(query) ||
+                r.beneficiario.toLowerCase().includes(query) ||
+                r.identificacion.toLowerCase().includes(query)
+            );
+            renderizarTabla(filtrados);
+        }
+
+        function filtrarPorEstado() {
+            const estado = document.getElementById("filterEstado").value;
+            if(estado === "Todos") {
+                renderizarTabla(registros);
+            } else {
+                const filtrados = registros.filter(r => r.estado === estado);
+                renderizarTabla(filtrados);
+            }
+        }
+
+        function exportarCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Nombre del Archivo o Carpeta,Numero Liquidacion,Beneficiario,Identificacion Beneficiario,Estado\n";
+            registros.forEach(r => {
+                csvContent += `"${r.archivo}","${r.liquidacion}","${r.beneficiario}","${r.identificacion}","${r.estado}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Impuesto_Registro_Valle.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function inicializarGraficos() {
+            const ctx1 = document.getElementById('chartEstados').getContext('2d');
+            chartEstadosInstance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: obtenerDataEstados(),
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctx2 = document.getElementById('chartVolumen').getContext('2d');
+            chartVolumenInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                    datasets: [{
+                        label: 'Liquidaciones Recibidas',
+                        data: [12, 19, 15, registros.length],
+                        backgroundColor: '#70132B'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function obtenerDataEstados() {
+            const aprobados = registros.filter(r => r.estado === "Aprobado").length;
+            const revision = registros.filter(r => r.estado === "En Revisión").length;
+            const pendientes = registros.filter(r => r.estado === "Pendiente").length;
+            return {
+                labels: ['Aprobados', 'En Revisión', 'Pendientes'],
+                datasets: [{
+                    data: [aprobados, revision, pendientes],
+                    backgroundColor: ['#10b981', '#f59e0b', '#f43f5e']
+                }]
+            };
+        }
+
+        function actualizarGraficos() {
+            if(chartEstadosInstance) {
+                chartEstadosInstance.data = obtenerDataEstados();
+                chartEstadosInstance.update();
+            }
+        }
+    </script>
+</body>
+</html>
