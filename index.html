@@ -104,4 +104,432 @@
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Aprobados</p>
                         <h3 id="kpiAprobados" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-
+                    <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pendientes</p>
+                        <h3 id="kpiPendientes" class="text-2xl font-bold text-amber-500 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Checklist Completo (10/10)</p>
+                        <h3 id="kpiCompletos" class="text-2xl font-bold text-blue-600 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-file-circle-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficas Estadísticas -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Gráfica Estado Expedientes -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h4 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-doughnut text-vinotinto"></i>
+                        Distribución por Estado de Registro
+                    </h4>
+                    <div class="relative h-64">
+                        <canvas id="chartEstados"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfica Progreso Checklist -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h4 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bars-progress text-vinotinto"></i>
+                        Completitud del Checklist de Documentos
+                    </h4>
+                    <div class="relative h-64">
+                        <canvas id="chartChecklist"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Formulario / Documentos -->
+    <div id="modalForm" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <h3 id="modalTitulo" class="text-lg font-bold text-slate-800">Editar Liquidación y Documentos</h3>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="registroForm" onsubmit="guardarRegistro(event)" class="p-6 space-y-4">
+                <input type="hidden" id="campoFila">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Número de Archivo</label>
+                        <input type="text" id="campoArchivo" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Liquidación</label>
+                        <input type="text" id="campoLiquidacion" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Beneficiario</label>
+                        <input type="text" id="campoBeneficiario" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Identificación</label>
+                        <input type="text" id="campoIdentificacion" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Estado</label>
+                        <select id="campoEstado" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto bg-white">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Aprobado">Aprobado</option>
+                            <option value="En Revisión">En Revisión</option>
+                            <option value="Rechazado">Rechazado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-700 mb-3">Checklist de Documentos (Archivos PDF)</h4>
+                    <div id="contenedorDocs" class="space-y-3">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
+                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover-bg-vinotinto">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Integrado -->
+    <script>
+        const POST_API_URL = "https://script.google.com/macros/s/AKfycbxOIE9D3Rr92IyrUOyNqXjAtPN3_qsXKTBFb7r2QPRrrx7lws5bQddakRZFqE4CuAVAJw/exec";
+
+        const docKeys = ['sar', 'vur', 'req_orip', 'escritura', 'boleta', 'informe', 'resp_orip', 'req_tesoreria', 'resp_tesoreria', 'invitacion'];
+        const docNames = {
+            sar: '1. Imagen SAR',
+            vur: '2. Imagen VUR',
+            req_orip: '3. Requerimiento ORIP',
+            escritura: '4. Escritura',
+            boleta: '5. Boleta Fiscal',
+            informe: '6. Informe de Investigación',
+            resp_orip: '7. Respuesta ORIP',
+            req_tesoreria: '8. Requerimiento Tesorería',
+            resp_tesoreria: '9. Respuesta Tesorería',
+            invitacion: '10. Envío de Invitación'
+        };
+
+        let datosGlobales = [];
+        let existingDocsMap = {};
+        let chartEstadosInstance = null;
+        let chartChecklistInstance = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarDatos();
+        });
+
+        function cargarDatos() {
+            const script = document.createElement('script');
+            script.src = `${POST_API_URL}?callback=procesarDatosGoogle`;
+            document.body.appendChild(script);
+        }
+
+        function procesarDatosGoogle(datos) {
+            datosGlobales = datos;
+            renderizarTabla(datosGlobales);
+            actualizarDashboard(datosGlobales);
+        }
+
+        function cambiarVista(vista) {
+            const vistaReg = document.getElementById("vistaRegistros");
+            const vistaDash = document.getElementById("vistaDashboard");
+            const btnReg = document.getElementById("tabBtnRegistros");
+            const btnDash = document.getElementById("tabBtnDashboard");
+
+            if (vista === 'registros') {
+                vistaReg.classList.remove("hidden");
+                vistaDash.classList.add("hidden");
+                
+                btnReg.className = "px-4 py-2 rounded-lg text-sm font-semibold transition bg-white text-vinotinto shadow";
+                btnDash.className = "px-4 py-2 rounded-lg text-sm font-semibold transition text-white hover:bg-white hover:bg-opacity-10";
+            } else {
+                vistaReg.classList.add("hidden");
+                vistaDash.classList.remove("hidden");
+
+                btnDash.className = "px-4 py-2 rounded-lg text-sm font-semibold transition bg-white text-vinotinto shadow";
+                btnReg.className = "px-4 py-2 rounded-lg text-sm font-semibold transition text-white hover:bg-white hover:bg-opacity-10";
+            }
+        }
+
+        function renderizarTabla(datos) {
+            const tbody = document.getElementById("tablaCuerpo");
+            document.getElementById("cantRegistros").innerText = datos.length;
+
+            if (datos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">No hay registros almacenados.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = datos.map(item => {
+                let contadorDocs = 0;
+                if (item.docs) {
+                    Object.values(item.docs).forEach(url => { if (url && url.length > 5) contadorDocs++; });
+                }
+
+                let badgeColor = "bg-yellow-100 text-yellow-800";
+                if (item.estado === "Aprobado") badgeColor = "bg-green-100 text-green-800";
+                if (item.estado === "Rechazado") badgeColor = "bg-red-100 text-red-800";
+                if (item.estado === "En Revisión") badgeColor = "bg-blue-100 text-blue-800";
+
+                return `
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="py-3 px-4 font-semibold text-slate-700">${item.archivo}</td>
+                        <td class="py-3 px-4">${item.liquidacion}</td>
+                        <td class="py-3 px-4">${item.beneficiario}</td>
+                        <td class="py-3 px-4">${item.identificacion}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${badgeColor}">${item.estado}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
+                                <i class="fa-solid fa-paperclip mr-1"></i>${contadorDocs}/10
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-center space-x-2">
+                            <button onclick="abrirModalEditar(${item.fila})" title="Editar registro" class="text-slate-500 hover:text-vinotinto p-2 rounded-lg hover:bg-slate-100 transition">
+                                <i class="fa-solid fa-pen-to-square text-base"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function actualizarDashboard(datos) {
+            let total = datos.length;
+            let aprobados = 0;
+            let pendientes = 0;
+            let enRevision = 0;
+            let rechazados = 0;
+            let completos = 0;
+
+            let rango03 = 0, rango46 = 0, rango79 = 0, rango10 = 0;
+
+            datos.forEach(item => {
+                if (item.estado === "Aprobado") aprobados++;
+                else if (item.estado === "En Revisión") enRevision++;
+                else if (item.estado === "Rechazado") rechazados++;
+                else pendientes++;
+
+                let docsCount = 0;
+                if (item.docs) {
+                    Object.values(item.docs).forEach(url => { if (url && url.length > 5) docsCount++; });
+                }
+
+                if (docsCount === 10) completos++;
+
+                if (docsCount <= 3) rango03++;
+                else if (docsCount <= 6) rango46++;
+                else if (docsCount <= 9) rango79++;
+                else rango10++;
+            });
+
+            document.getElementById("kpiTotal").innerText = total;
+            document.getElementById("kpiAprobados").innerText = aprobados;
+            document.getElementById("kpiPendientes").innerText = pendientes;
+            document.getElementById("kpiCompletos").innerText = completos;
+
+            // Gráfica de Estados (Doughnut)
+            const ctxEstados = document.getElementById("chartEstados").getContext("2d");
+            if (chartEstadosInstance) chartEstadosInstance.destroy();
+
+            chartEstadosInstance = new Chart(ctxEstados, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Aprobado', 'Pendiente', 'En Revisión', 'Rechazado'],
+                    datasets: [{
+                        data: [aprobados, pendientes, enRevision, rechazados],
+                        backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#ef4444']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Gráfica de Checklist (Bar)
+            const ctxChecklist = document.getElementById("chartChecklist").getContext("2d");
+            if (chartChecklistInstance) chartChecklistInstance.destroy();
+
+            chartChecklistInstance = new Chart(ctxChecklist, {
+                type: 'bar',
+                data: {
+                    labels: ['0 - 3 Docs', '4 - 6 Docs', '7 - 9 Docs', '10 Docs (Completo)'],
+                    datasets: [{
+                        label: 'Número de Expedientes',
+                        data: [rango03, rango46, rango79, rango10],
+                        backgroundColor: '#6b1d2f'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function abrirModalNuevo() {
+            document.getElementById("modalTitulo").innerText = "Nuevo Registro";
+            document.getElementById("registroForm").reset();
+            document.getElementById("campoFila").value = "";
+            document.getElementById("campoEstado").value = "Pendiente";
+            existingDocsMap = {};
+            generarChecklistDocs({});
+            document.getElementById("modalForm").classList.remove("hidden");
+        }
+
+        function abrirModalEditar(fila) {
+            const registro = datosGlobales.find(r => r.fila === fila);
+            if (!registro) return;
+
+            document.getElementById("modalTitulo").innerText = "Editar Liquidación y Documentos";
+            document.getElementById("campoFila").value = registro.fila;
+            document.getElementById("campoArchivo").value = registro.archivo;
+            document.getElementById("campoLiquidacion").value = registro.liquidacion;
+            document.getElementById("campoBeneficiario").value = registro.beneficiario;
+            document.getElementById("campoIdentificacion").value = registro.identificacion;
+            document.getElementById("campoEstado").value = registro.estado || "Pendiente";
+
+            existingDocsMap = registro.docs || {};
+            generarChecklistDocs(existingDocsMap);
+            document.getElementById("modalForm").classList.remove("hidden");
+        }
+
+        function generarChecklistDocs(docs) {
+            const container = document.getElementById("contenedorDocs");
+            container.innerHTML = docKeys.map(k => {
+                const url = docs[k] || '';
+                const tieneDoc = url.length > 5;
+
+                return `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-100 text-xs">
+                        <span class="font-medium text-slate-700 w-1/3">${docNames[k]}</span>
+                        
+                        <div class="flex items-center space-x-2 w-2/3 justify-end">
+                            ${tieneDoc ? `
+                                <a href="${url}" target="_blank" class="text-vinotinto font-semibold hover:underline flex items-center space-x-1">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                    <span>Ver PDF</span>
+                                </a>
+                            ` : `<span class="text-slate-400">Pendiente</span>`}
+                            
+                            <input type="file" id="file_${k}" accept="application/pdf" class="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 w-48">
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function cerrarModal() {
+            document.getElementById("modalForm").classList.add("hidden");
+        }
+
+        async function guardarRegistro(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnGuardar");
+            btn.disabled = true;
+            btn.innerText = "Guardando cambios...";
+
+            const filaVal = document.getElementById("campoFila").value;
+            const esEdicion = filaVal !== "" && filaVal !== null;
+
+            const filesPayload = {};
+            for (const k of docKeys) {
+                const input = document.getElementById(`file_${k}`);
+                if (input && input.files.length > 0) {
+                    filesPayload[k] = await readFileAsBase64(input.files[0]);
+                }
+            }
+
+            const payload = {
+                action: esEdicion ? "update" : "create",
+                fila: esEdicion ? parseInt(filaVal) : null,
+                archivo: document.getElementById("campoArchivo").value,
+                liquidacion: document.getElementById("campoLiquidacion").value,
+                beneficiario: document.getElementById("campoBeneficiario").value,
+                identificacion: document.getElementById("campoIdentificacion").value,
+                estado: document.getElementById("campoEstado").value,
+                files: filesPayload,
+                existingDocs: existingDocsMap
+            };
+
+            try {
+                const data = new URLSearchParams();
+                data.append("payload", JSON.stringify(payload));
+
+                await fetch(POST_API_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: data.toString()
+                });
+
+                setTimeout(() => {
+                    cerrarModal();
+                    cargarDatos();
+                    btn.disabled = false;
+                    btn.innerText = "Guardar Cambios";
+                }, 2500);
+
+            } catch (err) {
+                alert("Error al conectar con el servidor.");
+                btn.disabled = false;
+                btn.innerText = "Guardar Cambios";
+            }
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const raw = reader.result.split(',')[1];
+                    resolve({
+                        name: file.name,
+                        type: file.type,
+                        bytes: raw
+                    });
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function filtrarTabla() {
+            const query = document.getElementById("inputBuscar").value.toLowerCase();
+            const filtrados = datosGlobales.filter(item => 
+                item.archivo.toLowerCase().includes(query) ||
+                item.liquidacion.toLowerCase().includes(query) ||
+                item.beneficiario.toLowerCase().includes(query) ||
+                item.identificacion.toLowerCase().includes(query)
+            );
+            renderizarTabla(filtrados);
+        }
+    </script>
+</body>
+</html>
