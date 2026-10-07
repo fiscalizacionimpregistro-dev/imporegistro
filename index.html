@@ -318,11 +318,43 @@
             inicializarGraficos();
         });
 
+        // Carga dual: intenta por Apps Script directo y si falla, entra por GViz
         function cargarDatos() {
             const icon = document.getElementById("loadingIcon");
             if(icon) icon.classList.add("fa-spin");
 
-            const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=responseHandler:procesarRespuestaGViz`;
+            const timestamp = new Date().getTime();
+            const directUrl = `${POST_API_URL}?callback=procesarRespuestaDirecta&_=${timestamp}`;
+
+            window.procesarRespuestaDirecta = function(rowsData) {
+                if(Array.isArray(rowsData) && rowsData.length > 0) {
+                    registros = rowsData.reverse();
+                    datosActuales = [...registros];
+                    paginaActual = 1;
+                    renderizarTabla(datosActuales);
+                    actualizarMetricas();
+                    actualizarGraficos();
+                    if(icon) icon.classList.remove("fa-spin");
+                } else {
+                    cargarDatosGViz();
+                }
+            };
+
+            const oldScript = document.getElementById("scriptDirect");
+            if(oldScript) oldScript.remove();
+
+            const script = document.createElement("script");
+            script.id = "scriptDirect";
+            script.src = directUrl;
+            script.onerror = function() {
+                cargarDatosGViz();
+            };
+            document.body.appendChild(script);
+        }
+
+        function cargarDatosGViz() {
+            const icon = document.getElementById("loadingIcon");
+            const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=responseHandler:procesarRespuestaGViz&_=${new Date().getTime()}`;
 
             const scriptViejo = document.getElementById("scriptGViz");
             if(scriptViejo) scriptViejo.remove();
@@ -365,4 +397,326 @@
                     actualizarMetricas();
                     actualizarGraficos();
                 } catch (e) {
-                    console.error("Error al procesar GViz:",
+                    console.error("Error procesando GViz:", e);
+                }
+                if(icon) icon.classList.remove("fa-spin");
+            };
+
+            const script = document.createElement("script");
+            script.id = "scriptGViz";
+            script.src = gvizUrl;
+            document.body.appendChild(script);
+        }
+
+        function renderizarTabla(datos = datosActuales) {
+            datosActuales = datos;
+            const tbody = document.getElementById("tablaBody");
+            tbody.innerHTML = "";
+
+            if(datos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No se encontraron registros.</td></tr>`;
+                actualizarPaginacion(0, 0, 0);
+                return;
+            }
+
+            const totalPaginas = Math.ceil(datos.length / filasPorPagina);
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+            if (paginaActual < 1) paginaActual = 1;
+
+            const inicio = (paginaActual - 1) * filasPorPagina;
+            const fin = inicio + filasPorPagina;
+            const datosPaginados = datos.slice(inicio, fin);
+
+            datosPaginados.forEach((item) => {
+                let badgeColor = item.estado === 'Aprobado' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                                 item.estado === 'En Revisión' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                                 'bg-rose-100 text-rose-800 border-rose-200';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
+                        <td class="py-3 px-4 font-semibold text-slate-800 flex items-center">
+                            <i class="fa-regular fa-file-lines text-vinotinto mr-2"></i> ${item.archivo}
+                        </td>
+                        <td class="py-3 px-4 font-mono text-slate-700 font-medium">${item.liquidacion}</td>
+                        <td class="py-3 px-4 font-medium text-slate-800">${item.beneficiario}</td>
+                        <td class="py-3 px-4 font-mono text-slate-600">${item.identificacion}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeColor}">${item.estado}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center space-x-2">
+                            <button onclick="editarRegistroModal(${item.fila})" class="text-amber-600 hover:text-amber-800 px-1" title="Editar Registro y Documentos"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="eliminarRegistro(${item.fila})" class="text-rose-500 hover:text-rose-700 px-1" title="Eliminar en BD"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            actualizarPaginacion(inicio + 1, Math.min(fin, datos.length), datos.length);
+        }
+
+        function actualizarPaginacion(inicio, fin, total) {
+            document.getElementById('pageStart').innerText = total === 0 ? 0 : inicio;
+            document.getElementById('pageEnd').innerText = fin;
+            document.getElementById('pageTotal').innerText = total;
+            
+            const totalPaginas = Math.ceil(total / filasPorPagina);
+            document.getElementById('pageIndicator').innerText = `Pág. ${paginaActual} de ${totalPaginas || 1}`;
+
+            document.getElementById('btnPrev').disabled = paginaActual === 1;
+            document.getElementById('btnNext').disabled = paginaActual === totalPaginas || totalPaginas === 0;
+        }
+
+        function cambiarPagina(direccion) {
+            const totalPaginas = Math.ceil(datosActuales.length / filasPorPagina);
+            const nuevaPagina = paginaActual + direccion;
+            if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+                paginaActual = nuevaPagina;
+                renderizarTabla(datosActuales);
+            }
+        }
+
+        function filtrarTabla() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtrados = registros.filter(r => 
+                (r.archivo && r.archivo.toLowerCase().includes(query)) ||
+                (r.liquidacion && r.liquidacion.toLowerCase().includes(query)) ||
+                (r.beneficiario && r.beneficiario.toLowerCase().includes(query)) ||
+                (r.identificacion && r.identificacion.toLowerCase().includes(query))
+            );
+            paginaActual = 1;
+            renderizarTabla(filtrados);
+        }
+
+        function filtrarPorEstado() {
+            const estado = document.getElementById("filterEstado").value;
+            paginaActual = 1;
+            if(estado === "Todos") renderizarTabla(registros);
+            else renderizarTabla(registros.filter(r => r.estado === estado));
+        }
+
+        function actualizarMetricas() {
+            document.getElementById("statTotal").innerText = registros.length;
+            document.getElementById("statAprobados").innerText = registros.filter(r => r.estado === "Aprobado").length;
+            document.getElementById("statRevision").innerText = registros.filter(r => r.estado === "En Revisión").length;
+            document.getElementById("statPendientes").innerText = registros.filter(r => r.estado === "Pendiente").length;
+        }
+
+        function construirChecklistUI(docs = {}) {
+            const container = document.getElementById("checklistBody");
+            container.innerHTML = "";
+
+            docKeys.forEach(k => {
+                const url = docs[k] || '';
+                const estaCargado = url !== '';
+
+                const badgeEstado = estaCargado 
+                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">Aprobado</span>`
+                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">Pendiente</span>`;
+
+                const btnPdf = estaCargado 
+                    ? `<a href="${url}" target="_blank" class="text-rose-600 hover:text-rose-800 p-1.5 rounded hover:bg-rose-50 transition inline-flex items-center" title="Ver / Descargar en Drive"><i class="fa-solid fa-file-pdf text-base"></i></a>`
+                    : `<span class="text-slate-300 p-1.5 inline-flex items-center" title="Sin archivo cargado"><i class="fa-solid fa-file-pdf text-base"></i></span>`;
+
+                container.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                        <td class="py-2 px-3 font-medium text-slate-800">
+                            ${docNames[k]}
+                        </td>
+                        <td class="py-2 px-3 text-center">
+                            ${badgeEstado}
+                        </td>
+                        <td class="py-2 px-3 text-center">
+                            <div class="flex items-center justify-center space-x-3">
+                                <label class="cursor-pointer text-slate-600 hover:text-vinotinto p-1.5 rounded hover:bg-slate-100 transition inline-flex items-center" title="Adjuntar/Actualizar archivo">
+                                    <i class="fa-solid fa-paperclip text-base"></i>
+                                    <input type="file" id="file_${k}" accept="image/*,.pdf" class="hidden" onchange="marcarSeleccionado('${k}')">
+                                </label>
+                                ${btnPdf}
+                            </div>
+                            <span id="label_${k}" class="block text-[9px] text-amber-600 font-semibold mt-0.5"></span>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function marcarSeleccionado(k) {
+            const input = document.getElementById(`file_${k}`);
+            const label = document.getElementById(`label_${k}`);
+            if (input && input.files.length > 0) {
+                label.innerText = "Seleccionado";
+            } else {
+                label.innerText = "";
+            }
+        }
+
+        function nuevoRegistroModal() {
+            document.getElementById("campoFila").value = "";
+            document.getElementById("modalTitulo").innerHTML = '<i class="fa-solid fa-folder-plus text-vinotinto mr-2"></i> Registrar Nueva Liquidación';
+            document.getElementById("formRegistro").reset();
+            existingDocsMap = {};
+            construirChecklistUI({});
+            document.getElementById("modalRegistro").classList.remove("hidden");
+        }
+
+        function editarRegistroModal(fila) {
+            const item = registros.find(r => r.fila === fila);
+            if (!item) return;
+
+            document.getElementById("campoFila").value = item.fila;
+            document.getElementById("campoArchivo").value = item.archivo;
+            document.getElementById("campoLiquidacion").value = item.liquidacion;
+            document.getElementById("campoBeneficiario").value = item.beneficiario;
+            document.getElementById("campoIdentificacion").value = item.identificacion;
+            document.getElementById("campoEstado").value = item.estado;
+
+            existingDocsMap = { ...item.docs };
+            construirChecklistUI(item.docs);
+
+            document.getElementById("modalTitulo").innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600 mr-2"></i> Editar Liquidación y Documentos';
+            document.getElementById("modalRegistro").classList.remove("hidden");
+        }
+
+        function cerrarModal() {
+            document.getElementById("modalRegistro").classList.add("hidden");
+            document.getElementById("formRegistro").reset();
+            existingDocsMap = {};
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve({ name: file.name, type: file.type, bytes: base64String });
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function guardarRegistro(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnGuardar");
+            btn.disabled = true;
+            btn.innerText = "Subiendo imágenes a Drive y guardando...";
+
+            const filaVal = document.getElementById("campoFila").value;
+            const esEdicion = filaVal !== "" && filaVal !== null;
+
+            const filesPayload = {};
+            for (const k of docKeys) {
+                const input = document.getElementById(`file_${k}`);
+                if (input && input.files.length > 0) {
+                    filesPayload[k] = await readFileAsBase64(input.files[0]);
+                }
+            }
+
+            const payload = {
+                action: esEdicion ? "update" : "create",
+                fila: esEdicion ? parseInt(filaVal) : null,
+                archivo: document.getElementById("campoArchivo").value,
+                liquidacion: document.getElementById("campoLiquidacion").value,
+                beneficiario: document.getElementById("campoBeneficiario").value,
+                identificacion: document.getElementById("campoIdentificacion").value,
+                estado: document.getElementById("campoEstado").value,
+                files: filesPayload,
+                existingDocs: existingDocsMap
+            };
+
+            try {
+                await fetch(POST_API_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+                
+                setTimeout(() => { 
+                    cerrarModal();
+                    cargarDatos(); 
+                }, 3000);
+            } catch (err) {
+                alert("Ocurrió un error al guardar los cambios.");
+                btn.disabled = false;
+                btn.innerText = "Guardar Cambios";
+            }
+        }
+
+        async function eliminarRegistro(fila) {
+            if(confirm("¿Seguro que deseas eliminar esta fila directamente de la base de datos?")) {
+                try {
+                    await fetch(POST_API_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ action: "delete", fila: parseInt(fila) })
+                    });
+                    setTimeout(() => { cargarDatos(); }, 2500);
+                } catch (err) {
+                    alert("Error al eliminar el registro.");
+                }
+            }
+        }
+
+        function exportarCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Archivo,Liquidacion,Beneficiario,Identificacion,Estado,SAR,VUR,REQ_ORIP,ESCRITURA,BOLETA,INFORME,RESP_ORIP,REQ_TESORERIA,RESP_TESORERIA,INVITACION\n";
+            registros.forEach(r => {
+                const d = r.docs || {};
+                csvContent += `"${r.archivo}","${r.liquidacion}","${r.beneficiario}","${r.identificacion}","${r.estado}","${d.sar||''}","${d.vur||''}","${d.req_orip||''}","${d.escritura||''}","${d.boleta||''}","${d.informe||''}","${d.resp_orip||''}","${d.req_tesoreria||''}","${d.resp_tesoreria||''}","${d.invitacion||''}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Impuesto_Registro_Base.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function inicializarGraficos() {
+            const ctx1 = document.getElementById('chartEstados').getContext('2d');
+            chartEstadosInstance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: obtenerDataEstados(),
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctx2 = document.getElementById('chartVolumen').getContext('2d');
+            chartVolumenInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Registros BD'],
+                    datasets: [{ label: 'Total', data: [registros.length], backgroundColor: '#70132B' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function obtenerDataEstados() {
+            return {
+                labels: ['Aprobados', 'En Revisión', 'Pendientes'],
+                datasets: [{
+                    data: [
+                        registros.filter(r => r.estado === "Aprobado").length,
+                        registros.filter(r => r.estado === "En Revisión").length,
+                        registros.filter(r => r.estado === "Pendiente").length
+                    ],
+                    backgroundColor: ['#10b981', '#f59e0b', '#f43f5e']
+                }]
+            };
+        }
+
+        function actualizarGraficos() {
+            if(chartEstadosInstance) {
+                chartEstadosInstance.data = obtenerDataEstados();
+                chartEstadosInstance.update();
+            }
+            if(chartVolumenInstance) {
+                chartVolumenInstance.data.datasets[0].data = [registros.length];
+                chartVolumenInstance.update();
+            }
+        }
+    </script>
+</body>
+</html>
