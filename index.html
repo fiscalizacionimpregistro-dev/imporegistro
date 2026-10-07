@@ -42,7 +42,7 @@
                 <div>
                     <h1 class="text-xs uppercase tracking-wider text-amber-300 font-semibold">GOBERNACIÓN DEL VALLE DEL CAUCA</h1>
                     <h2 class="text-lg font-bold leading-tight">Impuesto de Registro - Base de Datos Sincronizada</h2>
-                    <p class="text-xs text-slate-200">Gestión de Expedientes en Tiempo Real | Subgerencia de Fiscalización</p>
+                    <p class="text-xs text-slate-200">Gestión de Expedientes y Checklist de Documentación en Tiempo Real</p>
                 </div>
             </div>
             <div class="flex items-center space-x-6 text-xs border-l border-white/20 pl-6">
@@ -56,7 +56,7 @@
     <!-- Contenido Principal -->
     <div class="max-w-7xl mx-auto px-4 py-6">
         
-        <!-- Tarjetas de Resumen KPI Superiores -->
+        <!-- Tarjetas KPI -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
                 <div>
@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        <!-- Layout Gráficos y Filtros -->
+        <!-- Filtros y Gráficos -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center border-b pb-2">
@@ -149,14 +149,14 @@
             </div>
         </div>
 
-        <!-- Tabla de Datos Integrada con Paginación -->
+        <!-- Tabla con Checklist de Documentos -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
             <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
                 <div>
                     <h3 class="font-bold text-slate-800 text-sm flex items-center">
                         <i class="fa-solid fa-table text-vinotinto mr-2"></i> Base de Datos en Vivo
                     </h3>
-                    <p class="text-xs text-slate-500">Cualquier cambio guardado afectará directamente a Google Sheets</p>
+                    <p class="text-xs text-slate-500">Expedientes con Checklist de Soportes en Google Drive</p>
                 </div>
                 <div class="flex items-center space-x-2">
                     <input type="text" id="searchInput" onkeyup="filtrarTabla()" placeholder="Buscar por Nombre, Liquidación o NIT..." class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 w-72 focus:outline-none focus:ring-1 focus:ring-vinotinto">
@@ -171,26 +171,27 @@
                 <table class="w-full text-xs text-left text-slate-600">
                     <thead class="bg-vinotinto text-white uppercase text-[10px] tracking-wider">
                         <tr>
-                            <th class="py-3 px-4">1. Nombre del Archivo o Carpeta</th>
-                            <th class="py-3 px-4">2. Número Liquidación</th>
-                            <th class="py-3 px-4">3. Beneficiario</th>
-                            <th class="py-3 px-4">4. Identificación Beneficiario</th>
-                            <th class="py-3 px-4 text-center">Estado</th>
-                            <th class="py-3 px-4 text-center">Acciones</th>
+                            <th class="py-3 px-3">Archivo / Carpeta</th>
+                            <th class="py-3 px-3">Liquidación</th>
+                            <th class="py-3 px-3">Beneficiario</th>
+                            <th class="py-3 px-3">Identificación</th>
+                            <th class="py-3 px-2 text-center">Estado</th>
+                            <th class="py-3 px-3 text-center">Checklist (10 Documentos)</th>
+                            <th class="py-3 px-3 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaBody" class="divide-y divide-slate-100">
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-slate-400">
+                            <td colspan="7" class="py-12 text-center text-slate-400">
                                 <i class="fa-solid fa-circle-notch fa-spin text-3xl text-vinotinto mb-3"></i>
-                                <p class="text-sm">Conectando y cargando datos desde Google Sheets...</p>
+                                <p class="text-sm">Cargando base de datos y checklist...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Controles de Paginación -->
+            <!-- Paginación -->
             <div class="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
                 <div>
                     <p class="text-xs text-slate-600">
@@ -211,28 +212,31 @@
 
     </div>
 
-    <!-- Modal para Agregar/Editar Registro -->
-    <div id="modalRegistro" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 border border-slate-200">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center">
+    <!-- Modal para Agregar/Editar Registro y Checklist -->
+    <div id="modalRegistro" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col border border-slate-200">
+            <div class="flex justify-between items-center border-b p-4">
+                <h3 id="modalTitulo" class="font-bold text-slate-800 text-sm flex items-center">
                     <i class="fa-solid fa-folder-plus text-vinotinto mr-2"></i> Registrar Nueva Liquidación
                 </h3>
                 <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <form id="formRegistro" onsubmit="guardarRegistro(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">1. Nombre del Archivo o Carpeta *</label>
-                    <input type="text" id="campoArchivo" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+            <form id="formRegistro" onsubmit="guardarRegistro(event)" class="p-6 overflow-y-auto space-y-4">
+                <input type="hidden" id="campoFila" value="">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">1. Nombre del Archivo o Carpeta *</label>
+                        <input type="text" id="campoArchivo" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">2. Número Liquidación *</label>
+                        <input type="text" id="campoLiquidacion" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">2. Número Liquidación *</label>
-                    <input type="text" id="campoLiquidacion" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">3. Beneficiario *</label>
                         <input type="text" id="campoBeneficiario" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
@@ -241,33 +245,109 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">4. Identificación Beneficiario *</label>
                         <input type="text" id="campoIdentificacion" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
                     </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Estado del Registro</label>
+                        <select id="campoEstado" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                            <option value="Aprobado">Aprobado</option>
+                            <option value="En Revisión">En Revisión</option>
+                            <option value="Pendiente">Pendiente</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Estado del Registro</label>
-                    <select id="campoEstado" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
-                        <option value="Aprobado">Aprobado</option>
-                        <option value="En Revisión">En Revisión</option>
-                        <option value="Pendiente">Pendiente</option>
-                    </select>
+                <!-- Sección Checklist de Archivos -->
+                <div class="border-t border-slate-200 pt-3">
+                    <h4 class="text-xs font-bold text-slate-800 mb-2 flex items-center">
+                        <i class="fa-solid fa-list-check text-vinotinto mr-2"></i> Checklist de Soportes (PDF / JPG)
+                    </h4>
+                    <p class="text-[11px] text-slate-500 mb-3">Selecciona los archivos para subir automáticamente a Google Drive:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">1. IMAGEN SAR</label>
+                            <input type="file" id="file_sar" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_sar" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">2. IMAGEN VUR</label>
+                            <input type="file" id="file_vur" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_vur" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">3. REQUERIMIENTO ORIP</label>
+                            <input type="file" id="file_req_orip" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_req_orip" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">4. ESCRITURA</label>
+                            <input type="file" id="file_escritura" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_escritura" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">5. BOLETA FISCAL</label>
+                            <input type="file" id="file_boleta" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_boleta" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">6. INFORME DE INVESTIGACION</label>
+                            <input type="file" id="file_informe" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_informe" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">7. RESPUESTA ORIP</label>
+                            <input type="file" id="file_resp_orip" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_resp_orip" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">8. REQUERIMIENTO TESORERIA</label>
+                            <input type="file" id="file_req_tesoreria" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_req_tesoreria" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">9. RESPUESTA TESORERIA</label>
+                            <input type="file" id="file_resp_tesoreria" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_resp_tesoreria" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700">10. ENVIO DE INVITACION</label>
+                            <input type="file" id="file_invitacion" accept="image/*,.pdf" class="w-full text-[11px] mt-0.5">
+                            <div id="link_invitacion" class="text-[10px] text-emerald-600 mt-0.5 font-medium"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
+                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
                     <button type="button" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
-                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover:bg-vinotinto-dark shadow">Guardar en Base de Datos</button>
+                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover:bg-vinotinto-dark shadow">Guardar y Sincronizar en Drive</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Script de Integración -->
+    <!-- JavaScript Integrado -->
     <script>
-        // CONFIGURACIÓN DE CONEXIÓN INTEGRADA
         const SPREADSHEET_ID = '18drpsJyr9x9Y34Zeu6OMKEFuMIktnjytR6oQ4qjjuyk';
         const POST_API_URL = "https://script.google.com/macros/s/AKfycbxOIE9D3Rr92IyrUOyNqXjAtPN3_qsXKTBFb7r2QPRrrx7lws5bQddakRZFqE4CuAVAJw/exec";
 
+        const docKeys = ['sar', 'vur', 'req_orip', 'escritura', 'boleta', 'informe', 'resp_orip', 'req_tesoreria', 'resp_tesoreria', 'invitacion'];
+        const docNames = {
+            sar: 'IMAGEN SAR', vur: 'IMAGEN VUR', req_orip: 'REQUERIMIENTO ORIP', escritura: 'ESCRITURA',
+            boleta: 'BOLETA FISCAL', informe: 'INFORME DE INVESTIGACION', resp_orip: 'RESPUESTA ORIP',
+            req_tesoreria: 'REQUERIMIENTO TESORERIA', resp_tesoreria: 'RESPUESTA TESORERIA', invitacion: 'ENVIO DE INVITACION'
+        };
+
         let registros = [];
         let datosActuales = [];
+        let existingDocsMap = {};
         let chartEstadosInstance = null;
         let chartVolumenInstance = null;
 
@@ -302,7 +382,19 @@
                                 liquidacion: c[1] ? String(c[1].v || '') : '',
                                 beneficiario: c[2] ? String(c[2].v || '') : '',
                                 identificacion: c[3] ? String(c[3].v || '') : '',
-                                estado: c[4] ? String(c[4].v || 'Aprobado') : 'Aprobado'
+                                estado: c[4] ? String(c[4].v || 'Aprobado') : 'Aprobado',
+                                docs: {
+                                    sar: c[5] ? String(c[5].v || '') : '',
+                                    vur: c[6] ? String(c[6].v || '') : '',
+                                    req_orip: c[7] ? String(c[7].v || '') : '',
+                                    escritura: c[8] ? String(c[8].v || '') : '',
+                                    boleta: c[9] ? String(c[9].v || '') : '',
+                                    informe: c[10] ? String(c[10].v || '') : '',
+                                    resp_orip: c[11] ? String(c[11].v || '') : '',
+                                    req_tesoreria: c[12] ? String(c[12].v || '') : '',
+                                    resp_tesoreria: c[13] ? String(c[13].v || '') : '',
+                                    invitacion: c[14] ? String(c[14].v || '') : ''
+                                }
                             });
                         }
                     });
@@ -315,10 +407,6 @@
                     actualizarGraficos();
                 } catch (e) {
                     console.error("Error al procesar GViz:", e);
-                    document.getElementById("tablaBody").innerHTML = `
-                        <tr><td colspan="6" class="py-6 text-center text-rose-600 font-semibold">
-                            Error al procesar la respuesta de la hoja de cálculo.
-                        </td></tr>`;
                 }
                 if(icon) icon.classList.remove("fa-spin");
             };
@@ -326,15 +414,6 @@
             const script = document.createElement("script");
             script.id = "scriptGViz";
             script.src = gvizUrl + "&_=" + new Date().getTime();
-            
-            script.onerror = function() {
-                if(icon) icon.classList.remove("fa-spin");
-                document.getElementById("tablaBody").innerHTML = `
-                    <tr><td colspan="6" class="py-6 text-center text-rose-600 font-semibold">
-                        No se pudo conectar a Google Sheets. Asegúrate de haberla publicado en la web (Archivo > Compartir > Publicar en la web).
-                    </td></tr>`;
-            };
-
             document.body.appendChild(script);
         }
 
@@ -344,7 +423,7 @@
             tbody.innerHTML = "";
 
             if(datos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No se encontraron registros.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">No se encontraron registros.</td></tr>`;
                 actualizarPaginacion(0, 0, 0);
                 return;
             }
@@ -362,18 +441,32 @@
                                  item.estado === 'En Revisión' ? 'bg-amber-100 text-amber-800 border-amber-200' :
                                  'bg-rose-100 text-rose-800 border-rose-200';
 
+                // Generar checklist de badges con enlaces a Drive
+                let checklistHtml = `<div class="flex flex-wrap gap-1 justify-center max-w-xs">`;
+                docKeys.forEach(k => {
+                    const url = item.docs ? item.docs[k] : '';
+                    if (url) {
+                        checklistHtml += `<a href="${url}" target="_blank" class="px-1.5 py-0.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-700 text-[9px] font-semibold rounded flex items-center gap-1" title="Ver/Descargar ${docNames[k]}"><i class="fa-solid fa-file-pdf"></i> ${docNames[k]}</a>`;
+                    } else {
+                        checklistHtml += `<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-slate-400 text-[9px] rounded" title="Pendiente ${docNames[k]}">${docNames[k]}</span>`;
+                    }
+                });
+                checklistHtml += `</div>`;
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
-                        <td class="py-3 px-4 font-semibold text-slate-800 flex items-center">
+                        <td class="py-3 px-3 font-semibold text-slate-800 flex items-center">
                             <i class="fa-regular fa-file-lines text-vinotinto mr-2"></i> ${item.archivo}
                         </td>
-                        <td class="py-3 px-4 font-mono text-slate-700 font-medium">${item.liquidacion}</td>
-                        <td class="py-3 px-4 font-medium text-slate-800">${item.beneficiario}</td>
-                        <td class="py-3 px-4 font-mono text-slate-600">${item.identificacion}</td>
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-3 font-mono text-slate-700 font-medium">${item.liquidacion}</td>
+                        <td class="py-3 px-3 font-medium text-slate-800">${item.beneficiario}</td>
+                        <td class="py-3 px-3 font-mono text-slate-600">${item.identificacion}</td>
+                        <td class="py-3 px-2 text-center">
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeColor}">${item.estado}</span>
                         </td>
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-3 text-center">${checklistHtml}</td>
+                        <td class="py-3 px-3 text-center space-x-1 whitespace-nowrap">
+                            <button onclick="editarRegistroModal(${item.fila})" class="text-amber-600 hover:text-amber-800 px-1" title="Editar Registro / Cargar Soportes"><i class="fa-solid fa-pen-to-square"></i></button>
                             <button onclick="eliminarRegistro(${item.fila})" class="text-rose-500 hover:text-rose-700 px-1" title="Eliminar en BD"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
@@ -391,17 +484,13 @@
             const totalPaginas = Math.ceil(total / filasPorPagina);
             document.getElementById('pageIndicator').innerText = `Pág. ${paginaActual} de ${totalPaginas || 1}`;
 
-            const btnPrev = document.getElementById('btnPrev');
-            const btnNext = document.getElementById('btnNext');
-
-            btnPrev.disabled = paginaActual === 1;
-            btnNext.disabled = paginaActual === totalPaginas || totalPaginas === 0;
+            document.getElementById('btnPrev').disabled = paginaActual === 1;
+            document.getElementById('btnNext').disabled = paginaActual === totalPaginas || totalPaginas === 0;
         }
 
         function cambiarPagina(direccion) {
             const totalPaginas = Math.ceil(datosActuales.length / filasPorPagina);
             const nuevaPagina = paginaActual + direccion;
-            
             if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
                 paginaActual = nuevaPagina;
                 renderizarTabla(datosActuales);
@@ -434,28 +523,94 @@
             document.getElementById("statPendientes").innerText = registros.filter(r => r.estado === "Pendiente").length;
         }
 
+        function limpiarArchivosModal() {
+            docKeys.forEach(k => {
+                document.getElementById(`file_${k}`).value = '';
+                document.getElementById(`link_${k}`).innerHTML = '';
+            });
+            existingDocsMap = {};
+        }
+
         function nuevoRegistroModal() {
+            document.getElementById("campoFila").value = "";
+            document.getElementById("modalTitulo").innerHTML = '<i class="fa-solid fa-folder-plus text-vinotinto mr-2"></i> Registrar Nueva Liquidación';
+            document.getElementById("formRegistro").reset();
+            limpiarArchivosModal();
+            document.getElementById("modalRegistro").classList.remove("hidden");
+        }
+
+        function editarRegistroModal(fila) {
+            const item = registros.find(r => r.fila === fila);
+            if (!item) return;
+
+            document.getElementById("campoFila").value = item.fila;
+            document.getElementById("campoArchivo").value = item.archivo;
+            document.getElementById("campoLiquidacion").value = item.liquidacion;
+            document.getElementById("campoBeneficiario").value = item.beneficiario;
+            document.getElementById("campoIdentificacion").value = item.identificacion;
+            document.getElementById("campoEstado").value = item.estado;
+
+            limpiarArchivosModal();
+            existingDocsMap = { ...item.docs };
+
+            docKeys.forEach(k => {
+                const url = item.docs ? item.docs[k] : '';
+                if (url) {
+                    document.getElementById(`link_${k}`).innerHTML = `<a href="${url}" target="_blank" class="underline"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver archivo cargado en Drive</a>`;
+                }
+            });
+
+            document.getElementById("modalTitulo").innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600 mr-2"></i> Editar Liquidación y Checklist';
             document.getElementById("modalRegistro").classList.remove("hidden");
         }
 
         function cerrarModal() {
             document.getElementById("modalRegistro").classList.add("hidden");
             document.getElementById("formRegistro").reset();
+            limpiarArchivosModal();
+        }
+
+        // Convierte el archivo seleccionado localmente a Base64
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve({ name: file.name, type: file.type, bytes: base64String });
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
         }
 
         async function guardarRegistro(e) {
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
             btn.disabled = true;
-            btn.innerText = "Guardando en BD...";
+            btn.innerText = "Subiendo archivos a Drive y guardando...";
 
-            const nuevo = {
-                action: "create",
+            const fila = document.getElementById("campoFila").value;
+            const esEdicion = fila !== "";
+
+            // Leer los archivos seleccionados para el checklist
+            const filesPayload = {};
+            for (const k of docKeys) {
+                const input = document.getElementById(`file_${k}`);
+                if (input && input.files.length > 0) {
+                    filesPayload[k] = await readFileAsBase64(input.files[0]);
+                }
+            }
+
+            const payload = {
+                action: esEdicion ? "update" : "create",
+                fila: esEdicion ? parseInt(fila) : null,
                 archivo: document.getElementById("campoArchivo").value,
                 liquidacion: document.getElementById("campoLiquidacion").value,
                 beneficiario: document.getElementById("campoBeneficiario").value,
                 identificacion: document.getElementById("campoIdentificacion").value,
-                estado: document.getElementById("campoEstado").value
+                estado: document.getElementById("campoEstado").value,
+                files: filesPayload,
+                existingDocs: existingDocsMap
             };
 
             try {
@@ -463,16 +618,16 @@
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify(nuevo)
+                    body: JSON.stringify(payload)
                 });
                 
                 cerrarModal();
-                setTimeout(() => { cargarDatos(); }, 2000);
+                setTimeout(() => { cargarDatos(); }, 3000);
             } catch (err) {
-                alert("Error al guardar el registro.");
+                alert("Error al procesar la solicitud.");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Guardar en Base de Datos";
+                btn.innerText = "Guardar y Sincronizar en Drive";
             }
         }
 
@@ -493,14 +648,15 @@
         }
 
         function exportarCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Nombre del Archivo o Carpeta,Numero Liquidacion,Beneficiario,Identificacion Beneficiario,Estado\n";
+            let csvContent = "data:text/csv;charset=utf-8,Archivo,Liquidacion,Beneficiario,Identificacion,Estado,SAR,VUR,REQ_ORIP,ESCRITURA,BOLETA,INFORME,RESP_ORIP,REQ_TESORERIA,RESP_TESORERIA,INVITACION\n";
             registros.forEach(r => {
-                csvContent += `"${r.archivo}","${r.liquidacion}","${r.beneficiario}","${r.identificacion}","${r.estado}"\n`;
+                const d = r.docs || {};
+                csvContent += `"${r.archivo}","${r.liquidacion}","${r.beneficiario}","${r.identificacion}","${r.estado}","${d.sar||''}","${d.vur||''}","${d.req_orip||''}","${d.escritura||''}","${d.boleta||''}","${d.informe||''}","${d.resp_orip||''}","${d.req_tesoreria||''}","${d.resp_tesoreria||''}","${d.invitacion||''}"\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Impuesto_Registro_Valle.csv");
+            link.setAttribute("download", "Impuesto_Registro_Checklist.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
