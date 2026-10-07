@@ -3,283 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gobernación del Valle - Impuesto de Registro y Control de Liquidaciones</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Gestión de Liquidaciones y Documentos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        vinotinto: {
-                            DEFAULT: '#70132B',
-                            dark: '#4a0c1c',
-                            light: '#8c1937'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        .bg-vinotinto { background-color: #6b1d2f; }
+        .hover-bg-vinotinto:hover { background-color: #521523; }
+        .text-vinotinto { color: #6b1d2f; }
+        .border-vinotinto { border-color: #6b1d2f; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen">
+<body class="bg-slate-50 text-slate-800 min-h-screen">
 
-    <!-- Encabezado Institucional -->
-    <header class="bg-vinotinto text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-4">
-                <div class="bg-white/10 p-2 rounded-lg backdrop-blur-sm border border-white/20">
-                    <i class="fa-solid fa-landmark text-2xl text-amber-400"></i>
-                </div>
-                <div>
-                    <h1 class="text-xs uppercase tracking-wider text-amber-300 font-semibold">GOBERNACIÓN DEL VALLE DEL CAUCA</h1>
-                    <h2 class="text-lg font-bold leading-tight">Impuesto de Registro - Base de Datos Sincronizada</h2>
-                    <p class="text-xs text-slate-200">Gestión de Expedientes y Soportes Documentales en Tiempo Real</p>
-                </div>
+    <!-- Encabezado Principal -->
+    <header class="bg-vinotinto text-white shadow-lg">
+        <div class="max-w-7xl mx-mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-folder-open text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wide">Base de Datos de Impuestos y Registros</h1>
             </div>
-            <div class="flex items-center space-x-6 text-xs border-l border-white/20 pl-6">
-                <button onclick="cargarDatos()" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded text-white font-medium border border-white/30 transition flex items-center space-x-1">
-                    <i class="fa-solid fa-rotate mr-1" id="loadingIcon"></i> Actualizar Datos
-                </button>
-            </div>
+            <button onclick="abrirModalNuevo()" class="bg-white text-vinotinto px-4 py-2 rounded-lg font-semibold text-sm shadow hover:bg-slate-100 transition duration-150 flex items-center space-x-2">
+                <i class="fa-solid fa-plus"></i>
+                <span>Nuevo Registro</span>
+            </button>
         </div>
     </header>
 
     <!-- Contenido Principal -->
-    <div class="max-w-7xl mx-auto px-4 py-6">
+    <main class="max-w-7xl mx-auto px-4 py-8">
         
-        <!-- Tarjetas KPI -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-500 font-medium">Total Registros en BD</p>
-                    <h3 id="statTotal" class="text-2xl font-bold text-slate-800 mt-1">...</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Sincronizado con Google Sheets</p>
-                </div>
-                <div class="w-12 h-12 bg-vinotinto/10 rounded-lg flex items-center justify-center text-vinotinto">
-                    <i class="fa-solid fa-database text-xl"></i>
-                </div>
+        <!-- Buscador y Filtros -->
+        <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div class="relative w-full md:w-96">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                <input type="text" id="inputBuscar" onkeyup="filtrarTabla()" placeholder="Buscar por archivo, liquidación, beneficiario..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
             </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-500 font-medium">Estado Aprobado</p>
-                    <h3 id="statAprobados" class="text-2xl font-bold text-emerald-600 mt-1">...</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Liquidaciones procesadas</p>
-                </div>
-                <div class="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center text-emerald-600">
-                    <i class="fa-solid fa-circle-check text-xl"></i>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-500 font-medium">En Revisión</p>
-                    <h3 id="statRevision" class="text-2xl font-bold text-amber-600 mt-1">...</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">En proceso de verificación</p>
-                </div>
-                <div class="w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-600">
-                    <i class="fa-solid fa-clock text-xl"></i>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-500 font-medium">Pendientes</p>
-                    <h3 id="statPendientes" class="text-2xl font-bold text-rose-600 mt-1">...</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Pendientes de pago/mora</p>
-                </div>
-                <div class="w-12 h-12 bg-rose-500/10 rounded-lg flex items-center justify-center text-rose-600">
-                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-                </div>
+            <div class="text-xs text-slate-500 font-medium">
+                Registros cargados: <span id="cantRegistros" class="font-bold text-slate-700">0</span>
             </div>
         </div>
 
-        <!-- Filtros y Gráficos -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center border-b pb-2">
-                    <i class="fa-solid fa-filter text-vinotinto mr-2"></i> Acciones & Filtros
-                </h3>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Filtrar por Estado</label>
-                    <select id="filterEstado" onchange="filtrarPorEstado()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
-                        <option value="Todos">Todos los Estados</option>
-                        <option value="Aprobado">Aprobado</option>
-                        <option value="En Revisión">En Revisión</option>
-                        <option value="Pendiente">Pendiente</option>
-                    </select>
-                </div>
-
-                <div class="pt-2 border-t border-slate-100">
-                    <button onclick="nuevoRegistroModal()" class="w-full bg-vinotinto hover:bg-vinotinto-dark text-white text-xs font-semibold py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>+ Nueva Liquidación</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <h4 class="text-xs font-bold text-slate-700 mb-3 flex items-center">
-                        <i class="fa-solid fa-chart-pie text-vinotinto mr-2"></i> Estado de los Registros
-                    </h4>
-                    <div class="h-48 relative flex items-center justify-center">
-                        <canvas id="chartEstados"></canvas>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <h4 class="text-xs font-bold text-slate-700 mb-3 flex items-center">
-                        <i class="fa-solid fa-chart-bar text-vinotinto mr-2"></i> Volumen de Expedientes
-                    </h4>
-                    <div class="h-48">
-                        <canvas id="chartVolumen"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabla Limpia de Datos -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
-                <div>
-                    <h3 class="font-bold text-slate-800 text-sm flex items-center">
-                        <i class="fa-solid fa-table text-vinotinto mr-2"></i> Base de Datos en Vivo
-                    </h3>
-                    <p class="text-xs text-slate-500">Cualquier cambio guardado afectará directamente a Google Sheets</p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <input type="text" id="searchInput" onkeyup="filtrarTabla()" placeholder="Buscar por Nombre, Liquidación o NIT..." class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 w-72 focus:outline-none focus:ring-1 focus:ring-vinotinto">
-                    <button onclick="exportarCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
-                        <i class="fa-solid fa-file-excel"></i>
-                        <span>Exportar CSV</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto min-h-[400px]">
-                <table class="w-full text-xs text-left text-slate-600">
-                    <thead class="bg-vinotinto text-white uppercase text-[10px] tracking-wider">
-                        <tr>
-                            <th class="py-3 px-4">1. Nombre del Archivo o Carpeta</th>
-                            <th class="py-3 px-4">2. Número Liquidación</th>
-                            <th class="py-3 px-4">3. Beneficiario</th>
-                            <th class="py-3 px-4">4. Identificación Beneficiario</th>
-                            <th class="py-3 px-4 text-center">Estado</th>
+        <!-- Tabla de Datos -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 uppercase text-xs font-semibold tracking-wider border-b border-slate-200">
+                            <th class="py-3 px-4">N° Archivo</th>
+                            <th class="py-3 px-4">Liquidación</th>
+                            <th class="py-3 px-4">Beneficiario</th>
+                            <th class="py-3 px-4">Identificación</th>
+                            <th class="py-3 px-4">Estado</th>
+                            <th class="py-3 px-4 text-center">Documentos</th>
                             <th class="py-3 px-4 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaBody" class="divide-y divide-slate-100">
+                    <tbody id="tablaCuerpo" class="divide-y divide-slate-100 text-sm">
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-slate-400">
-                                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-vinotinto mb-3"></i>
-                                <p class="text-sm">Conectando y cargando datos desde Google Sheets...</p>
+                            <td colspan="7" class="text-center py-8 text-slate-400">
+                                <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Cargando información desde la base de datos...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- Paginación -->
-            <div class="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-600">
-                        Mostrando <span id="pageStart" class="font-bold text-slate-800">0</span> a <span id="pageEnd" class="font-bold text-slate-800">0</span> de <span id="pageTotal" class="font-bold text-slate-800">0</span> registros
-                    </p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button onclick="cambiarPagina(-1)" id="btnPrev" class="px-3 py-1.5 border border-slate-300 rounded text-xs font-medium text-slate-600 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
-                        <i class="fa-solid fa-chevron-left mr-1"></i> Anterior
-                    </button>
-                    <span id="pageIndicator" class="text-xs font-semibold text-slate-700 px-2">Pág. 1</span>
-                    <button onclick="cambiarPagina(1)" id="btnNext" class="px-3 py-1.5 border border-slate-300 rounded text-xs font-medium text-slate-600 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
-                        Siguiente <i class="fa-solid fa-chevron-right ml-1"></i>
-                    </button>
-                </div>
-            </div>
         </div>
+    </main>
 
-    </div>
-
-    <!-- Modal Editar Registro + Checklist -->
-    <div id="modalRegistro" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col border border-slate-200">
-            <div class="flex justify-between items-center border-b p-4 bg-slate-50 rounded-t-xl">
-                <h3 id="modalTitulo" class="font-bold text-slate-800 text-sm flex items-center">
-                    <i class="fa-solid fa-folder-plus text-vinotinto mr-2"></i> Registrar Nueva Liquidación
-                </h3>
-                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
+    <!-- Modal Formulario / Documentos -->
+    <div id="modalForm" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             
-            <form id="formRegistro" onsubmit="guardarRegistro(event)" class="p-6 overflow-y-auto space-y-5">
-                <input type="hidden" id="campoFila" value="">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <h3 id="modalTitulo" class="text-lg font-bold text-slate-800">Editar Liquidación y Documentos</h3>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
-                <!-- Datos Principales -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">1. Nombre del Archivo o Carpeta *</label>
-                        <input type="text" id="campoArchivo" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">2. Número Liquidación *</label>
-                        <input type="text" id="campoLiquidacion" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
-                    </div>
-                </div>
+            <form id="registroForm" onsubmit="guardarRegistro(event)" class="p-6 space-y-4">
+                <input type="hidden" id="campoFila">
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">3. Beneficiario *</label>
-                        <input type="text" id="campoBeneficiario" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Número de Archivo</label>
+                        <input type="text" id="campoArchivo" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">4. Identificación Beneficiario *</label>
-                        <input type="text" id="campoIdentificacion" required class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Liquidación</label>
+                        <input type="text" id="campoLiquidacion" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Estado del Registro</label>
-                        <select id="campoEstado" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-vinotinto">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Beneficiario</label>
+                        <input type="text" id="campoBeneficiario" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Identificación</label>
+                        <input type="text" id="campoIdentificacion" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Estado</label>
+                        <select id="campoEstado" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto bg-white">
+                            <option value="Pendiente">Pendiente</option>
                             <option value="Aprobado">Aprobado</option>
                             <option value="En Revisión">En Revisión</option>
-                            <option value="Pendiente">Pendiente</option>
+                            <option value="Rechazado">Rechazado</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Tabla de Documentos / Checklist -->
-                <div class="border-t border-slate-200 pt-4">
-                    <h4 class="text-xs font-bold text-slate-800 mb-3 flex items-center">
-                        <i class="fa-solid fa-list-check text-vinotinto mr-2"></i> Checklist de Documentos del Expediente
-                    </h4>
-
-                    <div class="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-700 text-[11px] border-b border-slate-200 uppercase font-semibold">
-                                    <th class="py-2.5 px-3">Elemento</th>
-                                    <th class="py-2.5 px-3 text-center w-28">Estado</th>
-                                    <th class="py-2.5 px-3 text-center w-36">Opciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="checklistBody" class="divide-y divide-slate-100 text-xs text-slate-700">
-                                <!-- Generación dinámica -->
-                            </tbody>
-                        </table>
+                <div class="pt-4 border-t border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-700 mb-3">Checklist de Documentos (Archivos PDF)</h4>
+                    <div id="contenedorDocs" class="space-y-3">
+                        <!-- Generado dinámicamente -->
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+                <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
                     <button type="button" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
-                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover:bg-vinotinto-dark shadow">Guardar Cambios</button>
+                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover-bg-vinotinto">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -292,314 +135,134 @@
 
         const docKeys = ['sar', 'vur', 'req_orip', 'escritura', 'boleta', 'informe', 'resp_orip', 'req_tesoreria', 'resp_tesoreria', 'invitacion'];
         const docNames = {
-            sar: '1. Imagen SAR', 
-            vur: '2. Imagen VUR', 
-            req_orip: '3. Requerimiento ORIP', 
+            sar: '1. Imagen SAR',
+            vur: '2. Imagen VUR',
+            req_orip: '3. Requerimiento ORIP',
             escritura: '4. Escritura',
-            boleta: '5. Boleta Fiscal', 
-            informe: '6. Informe de Investigación', 
+            boleta: '5. Boleta Fiscal',
+            informe: '6. Informe de Investigación',
             resp_orip: '7. Respuesta ORIP',
-            req_tesoreria: '8. Requerimiento Tesorería', 
-            resp_tesoreria: '9. Respuesta Tesorería', 
+            req_tesoreria: '8. Requerimiento Tesorería',
+            resp_tesoreria: '9. Respuesta Tesorería',
             invitacion: '10. Envío de Invitación'
         };
 
-        let registros = [];
-        let datosActuales = [];
+        let datosGlobales = [];
         let existingDocsMap = {};
-        let chartEstadosInstance = null;
-        let chartVolumenInstance = null;
 
-        let paginaActual = 1;
-        const filasPorPagina = 15;
-
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", () => {
             cargarDatos();
-            inicializarGraficos();
         });
 
-        // Carga Dual con Límite de Tiempo de 3.5 segundos
         function cargarDatos() {
-            const icon = document.getElementById("loadingIcon");
-            if(icon) icon.classList.add("fa-spin");
-
-            let cargado = false;
-
-            const timer = setTimeout(() => {
-                if (!cargado) {
-                    console.warn("Demora en API Apps Script, cargando vía CSV...");
-                    cargarDatosCSV();
-                }
-            }, 3500);
-
-            const timestamp = new Date().getTime();
-            const directUrl = `${POST_API_URL}?callback=procesarRespuestaDirecta&_=${timestamp}`;
-
-            window.procesarRespuestaDirecta = function(rowsData) {
-                if (!cargado && Array.isArray(rowsData) && rowsData.length > 0) {
-                    cargado = true;
-                    clearTimeout(timer);
-                    registros = rowsData.reverse();
-                    datosActuales = [...registros];
-                    paginaActual = 1;
-                    renderizarTabla(datosActuales);
-                    actualizarMetricas();
-                    actualizarGraficos();
-                    if(icon) icon.classList.remove("fa-spin");
-                }
-            };
-
-            const oldScript = document.getElementById("scriptDirect");
-            if(oldScript) oldScript.remove();
-
-            const script = document.createElement("script");
-            script.id = "scriptDirect";
-            script.src = directUrl;
-            script.onerror = function() {
-                if (!cargado) {
-                    clearTimeout(timer);
-                    cargarDatosCSV();
-                }
-            };
+            const script = document.createElement('script');
+            script.src = `${POST_API_URL}?callback=procesarDatosGoogle`;
             document.body.appendChild(script);
         }
 
-        // Carga ultra-rápida por CSV directo de Google Sheets
-        function cargarDatosCSV() {
-            const icon = document.getElementById("loadingIcon");
-            const csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&_=${new Date().getTime()}`;
-
-            fetch(csvUrl)
-                .then(res => res.text())
-                .then(csvText => {
-                    const lines = csvText.split('\n');
-                    registros = [];
-                    for (let i = 1; i < lines.length; i++) {
-                        if (!lines[i].trim()) continue;
-                        
-                        // Separar columnas respetando texto entre comillas
-                        const c = lines[i].match(/(".*?"|[^",\r\n]+)(?=\s*,|\s*$)/g) || lines[i].split(',');
-                        const clean = (val) => val ? val.replace(/^"|"$/g, '').trim() : '';
-
-                        if (c && (c[0] || c[1])) {
-                            registros.push({
-                                fila: i + 1,
-                                archivo: clean(c[0]),
-                                liquidacion: clean(c[1]),
-                                beneficiario: clean(c[2]),
-                                identificacion: clean(c[3]),
-                                estado: clean(c[4]) || 'Aprobado',
-                                docs: {
-                                    sar: clean(c[5]), vur: clean(c[6]), req_orip: clean(c[7]),
-                                    escritura: clean(c[8]), boleta: clean(c[9]), informe: clean(c[10]),
-                                    resp_orip: clean(c[11]), req_tesoreria: clean(c[12]),
-                                    resp_tesoreria: clean(c[13]), invitacion: clean(c[14])
-                                }
-                            });
-                        }
-                    }
-                    registros.reverse();
-                    datosActuales = [...registros];
-                    paginaActual = 1;
-                    renderizarTabla(datosActuales);
-                    actualizarMetricas();
-                    actualizarGraficos();
-                })
-                .catch(err => {
-                    console.error("Error al cargar por CSV:", err);
-                    const tbody = document.getElementById("tablaBody");
-                    tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-500 font-semibold">Error al conectar con Google Sheets. Revisa los permisos de compartir en la hoja.</td></tr>`;
-                })
-                .finally(() => {
-                    if(icon) icon.classList.remove("fa-spin");
-                });
+        function procesarDatosGoogle(datos) {
+            datosGlobales = datos;
+            renderizarTabla(datosGlobales);
         }
 
-        function renderizarTabla(datos = datosActuales) {
-            datosActuales = datos;
-            const tbody = document.getElementById("tablaBody");
-            tbody.innerHTML = "";
+        function renderizarTabla(datos) {
+            const tbody = document.getElementById("tablaCuerpo");
+            document.getElementById("cantRegistros").innerText = datos.length;
 
-            if(datos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No se encontraron registros.</td></tr>`;
-                actualizarPaginacion(0, 0, 0);
+            if (datos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">No hay registros almacenados.</td></tr>`;
                 return;
             }
 
-            const totalPaginas = Math.ceil(datos.length / filasPorPagina);
-            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
-            if (paginaActual < 1) paginaActual = 1;
+            tbody.innerHTML = datos.map(item => {
+                let contadorDocs = 0;
+                if (item.docs) {
+                    Object.values(item.docs).forEach(url => { if (url && url.length > 5) contadorDocs++; });
+                }
 
-            const inicio = (paginaActual - 1) * filasPorPagina;
-            const fin = inicio + filasPorPagina;
-            const datosPaginados = datos.slice(inicio, fin);
+                let badgeColor = "bg-yellow-100 text-yellow-800";
+                if (item.estado === "Aprobado") badgeColor = "bg-green-100 text-green-800";
+                if (item.estado === "Rechazado") badgeColor = "bg-red-100 text-red-800";
+                if (item.estado === "En Revisión") badgeColor = "bg-blue-100 text-blue-800";
 
-            datosPaginados.forEach((item) => {
-                let badgeColor = item.estado === 'Aprobado' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                                 item.estado === 'En Revisión' ? 'bg-amber-100 text-amber-800 border-amber-200' :
-                                 'bg-rose-100 text-rose-800 border-rose-200';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
-                        <td class="py-3 px-4 font-semibold text-slate-800 flex items-center">
-                            <i class="fa-regular fa-file-lines text-vinotinto mr-2"></i> ${item.archivo}
+                return `
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="py-3 px-4 font-semibold text-slate-700">${item.archivo}</td>
+                        <td class="py-3 px-4">${item.liquidacion}</td>
+                        <td class="py-3 px-4">${item.beneficiario}</td>
+                        <td class="py-3 px-4">${item.identificacion}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${badgeColor}">${item.estado}</span>
                         </td>
-                        <td class="py-3 px-4 font-mono text-slate-700 font-medium">${item.liquidacion}</td>
-                        <td class="py-3 px-4 font-medium text-slate-800">${item.beneficiario}</td>
-                        <td class="py-3 px-4 font-mono text-slate-600">${item.identificacion}</td>
                         <td class="py-3 px-4 text-center">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeColor}">${item.estado}</span>
+                            <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
+                                <i class="fa-solid fa-paperclip mr-1"></i>${contadorDocs}/10
+                            </span>
                         </td>
                         <td class="py-3 px-4 text-center space-x-2">
-                            <button onclick="editarRegistroModal(${item.fila})" class="text-amber-600 hover:text-amber-800 px-1" title="Editar Registro y Documentos"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="eliminarRegistro(${item.fila})" class="text-rose-500 hover:text-rose-700 px-1" title="Eliminar en BD"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="abrirModalEditar(${item.fila})" class="text-slate-500 hover:text-vinotinto p-1">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
-            });
-
-            actualizarPaginacion(inicio + 1, Math.min(fin, datos.length), datos.length);
+            }).join('');
         }
 
-        function actualizarPaginacion(inicio, fin, total) {
-            document.getElementById('pageStart').innerText = total === 0 ? 0 : inicio;
-            document.getElementById('pageEnd').innerText = fin;
-            document.getElementById('pageTotal').innerText = total;
-            
-            const totalPaginas = Math.ceil(total / filasPorPagina);
-            document.getElementById('pageIndicator').innerText = `Pág. ${paginaActual} de ${totalPaginas || 1}`;
-
-            document.getElementById('btnPrev').disabled = paginaActual === 1;
-            document.getElementById('btnNext').disabled = paginaActual === totalPaginas || totalPaginas === 0;
-        }
-
-        function cambiarPagina(direccion) {
-            const totalPaginas = Math.ceil(datosActuales.length / filasPorPagina);
-            const nuevaPagina = paginaActual + direccion;
-            if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
-                paginaActual = nuevaPagina;
-                renderizarTabla(datosActuales);
-            }
-        }
-
-        function filtrarTabla() {
-            const query = document.getElementById("searchInput").value.toLowerCase();
-            const filtrados = registros.filter(r => 
-                (r.archivo && r.archivo.toLowerCase().includes(query)) ||
-                (r.liquidacion && r.liquidacion.toLowerCase().includes(query)) ||
-                (r.beneficiario && r.beneficiario.toLowerCase().includes(query)) ||
-                (r.identificacion && r.identificacion.toLowerCase().includes(query))
-            );
-            paginaActual = 1;
-            renderizarTabla(filtrados);
-        }
-
-        function filtrarPorEstado() {
-            const estado = document.getElementById("filterEstado").value;
-            paginaActual = 1;
-            if(estado === "Todos") renderizarTabla(registros);
-            else renderizarTabla(registros.filter(r => r.estado === estado));
-        }
-
-        function actualizarMetricas() {
-            document.getElementById("statTotal").innerText = registros.length;
-            document.getElementById("statAprobados").innerText = registros.filter(r => r.estado === "Aprobado").length;
-            document.getElementById("statRevision").innerText = registros.filter(r => r.estado === "En Revisión").length;
-            document.getElementById("statPendientes").innerText = registros.filter(r => r.estado === "Pendiente").length;
-        }
-
-        function construirChecklistUI(docs = {}) {
-            const container = document.getElementById("checklistBody");
-            container.innerHTML = "";
-
-            docKeys.forEach(k => {
-                const url = docs[k] || '';
-                const estaCargado = url !== '';
-
-                const badgeEstado = estaCargado 
-                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">Aprobado</span>`
-                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">Pendiente</span>`;
-
-                const btnPdf = estaCargado 
-                    ? `<a href="${url}" target="_blank" class="text-rose-600 hover:text-rose-800 p-1.5 rounded hover:bg-rose-50 transition inline-flex items-center" title="Ver / Descargar en Drive"><i class="fa-solid fa-file-pdf text-base"></i></a>`
-                    : `<span class="text-slate-300 p-1.5 inline-flex items-center" title="Sin archivo cargado"><i class="fa-solid fa-file-pdf text-base"></i></span>`;
-
-                container.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                        <td class="py-2 px-3 font-medium text-slate-800">
-                            ${docNames[k]}
-                        </td>
-                        <td class="py-2 px-3 text-center">
-                            ${badgeEstado}
-                        </td>
-                        <td class="py-2 px-3 text-center">
-                            <div class="flex items-center justify-center space-x-3">
-                                <label class="cursor-pointer text-slate-600 hover:text-vinotinto p-1.5 rounded hover:bg-slate-100 transition inline-flex items-center" title="Adjuntar/Actualizar archivo">
-                                    <i class="fa-solid fa-paperclip text-base"></i>
-                                    <input type="file" id="file_${k}" accept="image/*,.pdf" class="hidden" onchange="marcarSeleccionado('${k}')">
-                                </label>
-                                ${btnPdf}
-                            </div>
-                            <span id="label_${k}" class="block text-[9px] text-amber-600 font-semibold mt-0.5"></span>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function marcarSeleccionado(k) {
-            const input = document.getElementById(`file_${k}`);
-            const label = document.getElementById(`label_${k}`);
-            if (input && input.files.length > 0) {
-                label.innerText = "Seleccionado";
-            } else {
-                label.innerText = "";
-            }
-        }
-
-        function nuevoRegistroModal() {
+        function abrirModalNuevo() {
+            document.getElementById("modalTitulo").innerText = "Nuevo Registro";
+            document.getElementById("registroForm").reset();
             document.getElementById("campoFila").value = "";
-            document.getElementById("modalTitulo").innerHTML = '<i class="fa-solid fa-folder-plus text-vinotinto mr-2"></i> Registrar Nueva Liquidación';
-            document.getElementById("formRegistro").reset();
+            document.getElementById("campoEstado").value = "Pendiente";
             existingDocsMap = {};
-            construirChecklistUI({});
-            document.getElementById("modalRegistro").classList.remove("hidden");
+            generarChecklistDocs({});
+            document.getElementById("modalForm").classList.remove("hidden");
         }
 
-        function editarRegistroModal(fila) {
-            const item = registros.find(r => r.fila === fila);
-            if (!item) return;
+        function abrirModalEditar(fila) {
+            const registro = datosGlobales.find(r => r.fila === fila);
+            if (!registro) return;
 
-            document.getElementById("campoFila").value = item.fila;
-            document.getElementById("campoArchivo").value = item.archivo;
-            document.getElementById("campoLiquidacion").value = item.liquidacion;
-            document.getElementById("campoBeneficiario").value = item.beneficiario;
-            document.getElementById("campoIdentificacion").value = item.identificacion;
-            document.getElementById("campoEstado").value = item.estado;
+            document.getElementById("modalTitulo").innerText = "Editar Liquidación y Documentos";
+            document.getElementById("campoFila").value = registro.fila;
+            document.getElementById("campoArchivo").value = registro.archivo;
+            document.getElementById("campoLiquidacion").value = registro.liquidacion;
+            document.getElementById("campoBeneficiario").value = registro.beneficiario;
+            document.getElementById("campoIdentificacion").value = registro.identificacion;
+            document.getElementById("campoEstado").value = registro.estado || "Pendiente";
 
-            existingDocsMap = { ...item.docs };
-            construirChecklistUI(item.docs);
+            existingDocsMap = registro.docs || {};
+            generarChecklistDocs(existingDocsMap);
+            document.getElementById("modalForm").classList.remove("hidden");
+        }
 
-            document.getElementById("modalTitulo").innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600 mr-2"></i> Editar Liquidación y Documentos';
-            document.getElementById("modalRegistro").classList.remove("hidden");
+        function generarChecklistDocs(docs) {
+            const container = document.getElementById("contenedorDocs");
+            container.innerHTML = docKeys.map(k => {
+                const url = docs[k] || '';
+                const tieneDoc = url.length > 5;
+
+                return `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-100 text-xs">
+                        <span class="font-medium text-slate-700 w-1/3">${docNames[k]}</span>
+                        
+                        <div class="flex items-center space-x-2 w-2/3 justify-end">
+                            ${tieneDoc ? `
+                                <a href="${url}" target="_blank" class="text-vinotinto font-semibold hover:underline flex items-center space-x-1">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                    <span>Ver PDF</span>
+                                </a>
+                            ` : `<span class="text-slate-400">Pendiente</span>`}
+                            
+                            <input type="file" id="file_${k}" accept="application/pdf" class="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 w-48">
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function cerrarModal() {
-            document.getElementById("modalRegistro").classList.add("hidden");
-            document.getElementById("formRegistro").reset();
-            existingDocsMap = {};
-        }
-
-        function readFileAsBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const base64String = reader.result.split(',')[1];
-                    resolve({ name: file.name, type: file.type, bytes: base64String });
-                };
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
+            document.getElementById("modalForm").classList.add("hidden");
         }
 
         async function guardarRegistro(e) {
@@ -638,91 +301,46 @@
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(payload)
                 });
-                
-                setTimeout(() => { 
+
+                setTimeout(() => {
                     cerrarModal();
-                    cargarDatos(); 
-                }, 3000);
+                    cargarDatos();
+                    btn.disabled = false;
+                    btn.innerText = "Guardar Cambios";
+                }, 3500);
+
             } catch (err) {
-                alert("Ocurrió un error al guardar los cambios.");
+                alert("Error de conexión con el servidor.");
                 btn.disabled = false;
                 btn.innerText = "Guardar Cambios";
             }
         }
 
-        async function eliminarRegistro(fila) {
-            if(confirm("¿Seguro que deseas eliminar esta fila directamente de la base de datos?")) {
-                try {
-                    await fetch(POST_API_URL, {
-                        method: "POST",
-                        mode: "no-cors",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify({ action: "delete", fila: parseInt(fila) })
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const raw = reader.result.split(',')[1];
+                    resolve({
+                        name: file.name,
+                        type: file.type,
+                        bytes: raw
                     });
-                    setTimeout(() => { cargarDatos(); }, 2500);
-                } catch (err) {
-                    alert("Error al eliminar el registro.");
-                }
-            }
-        }
-
-        function exportarCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Archivo,Liquidacion,Beneficiario,Identificacion,Estado,SAR,VUR,REQ_ORIP,ESCRITURA,BOLETA,INFORME,RESP_ORIP,REQ_TESORERIA,RESP_TESORERIA,INVITACION\n";
-            registros.forEach(r => {
-                const d = r.docs || {};
-                csvContent += `"${r.archivo}","${r.liquidacion}","${r.beneficiario}","${r.identificacion}","${r.estado}","${d.sar||''}","${d.vur||''}","${d.req_orip||''}","${d.escritura||''}","${d.boleta||''}","${d.informe||''}","${d.resp_orip||''}","${d.req_tesoreria||''}","${d.resp_tesoreria||''}","${d.invitacion||''}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Impuesto_Registro_Base.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function inicializarGraficos() {
-            const ctx1 = document.getElementById('chartEstados').getContext('2d');
-            chartEstadosInstance = new Chart(ctx1, {
-                type: 'doughnut',
-                data: obtenerDataEstados(),
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            const ctx2 = document.getElementById('chartVolumen').getContext('2d');
-            chartVolumenInstance = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['Registros BD'],
-                    datasets: [{ label: 'Total', data: [registros.length], backgroundColor: '#70132B' }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
             });
         }
 
-        function obtenerDataEstados() {
-            return {
-                labels: ['Aprobados', 'En Revisión', 'Pendientes'],
-                datasets: [{
-                    data: [
-                        registros.filter(r => r.estado === "Aprobado").length,
-                        registros.filter(r => r.estado === "En Revisión").length,
-                        registros.filter(r => r.estado === "Pendiente").length
-                    ],
-                    backgroundColor: ['#10b981', '#f59e0b', '#f43f5e']
-                }]
-            };
-        }
-
-        function actualizarGraficos() {
-            if(chartEstadosInstance) {
-                chartEstadosInstance.data = obtenerDataEstados();
-                chartEstadosInstance.update();
-            }
-            if(chartVolumenInstance) {
-                chartVolumenInstance.data.datasets[0].data = [registros.length];
-                chartVolumenInstance.update();
-            }
+        function filtrarTabla() {
+            const query = document.getElementById("inputBuscar").value.toLowerCase();
+            const filtrados = datosGlobales.filter(item => 
+                item.archivo.toLowerCase().includes(query) ||
+                item.liquidacion.toLowerCase().includes(query) ||
+                item.beneficiario.toLowerCase().includes(query) ||
+                item.identificacion.toLowerCase().includes(query)
+            );
+            renderizarTabla(filtrados);
         }
     </script>
 </body>
