@@ -277,30 +277,37 @@
             inicializarGraficos();
         });
 
-        async function cargarDatos() {
+        // Carga mediante JSONP para omitir bloqueos CORS de Google
+        function cargarDatos() {
             const icon = document.getElementById("loadingIcon");
             if(icon) icon.classList.add("fa-spin");
 
-            try {
-                const resp = await fetch(API_URL, { redirect: "follow" });
-                registros = await resp.json();
-                
+            window.procesarRespuestaGoogle = function(data) {
+                registros = data;
                 registros.reverse(); 
-                
                 datosActuales = [...registros];
                 paginaActual = 1;
                 renderizarTabla(datosActuales);
                 actualizarMetricas();
                 actualizarGraficos();
-            } catch (err) {
-                console.error("Error al cargar la base de datos:", err);
+                if(icon) icon.classList.remove("fa-spin");
+                
+                const scriptViejo = document.getElementById("scriptJSONP");
+                if(scriptViejo) scriptViejo.remove();
+            };
+
+            const script = document.createElement("script");
+            script.id = "scriptJSONP";
+            script.src = API_URL + "?callback=procesarRespuestaGoogle";
+            script.onerror = function() {
+                console.error("Error al cargar la base de datos");
                 document.getElementById("tablaBody").innerHTML = `
                     <tr><td colspan="6" class="py-6 text-center text-rose-600 font-semibold">
-                        Error al conectar con la Base de Datos. Verifica que el despliegue esté en "Cualquier persona".
+                        Error al conectar con la Base de Datos.
                     </td></tr>`;
-            } finally {
                 if(icon) icon.classList.remove("fa-spin");
-            }
+            };
+            document.body.appendChild(script);
         }
 
         function renderizarTabla(datos = datosActuales) {
