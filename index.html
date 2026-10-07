@@ -149,7 +149,7 @@
             </div>
         </div>
 
-        <!-- Tabla de Datos Integrada -->
+        <!-- Tabla de Datos Integrada con Paginación -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
             <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
                 <div>
@@ -167,7 +167,7 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto min-h-[400px]">
                 <table class="w-full text-xs text-left text-slate-600">
                     <thead class="bg-vinotinto text-white uppercase text-[10px] tracking-wider">
                         <tr>
@@ -181,13 +181,31 @@
                     </thead>
                     <tbody id="tablaBody" class="divide-y divide-slate-100">
                         <tr>
-                            <td colspan="6" class="py-8 text-center text-slate-400">
-                                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-vinotinto mb-2"></i>
-                                <p>https://script.googleusercontent.com/a/macros/valledelcauca.gov.co/echo?user_content_key=AUkAhnQoZOjJM_RhdJ2jFcG_6z7QBJTyjCa2v5jJ5jgm5gCU-dAFhNFz5N1Z35_bU4QWY4SVZJ0vILE88C4ZPEQqonSZYMZ3FqAgeNKjWnEYiABFW74TVGPW9fppDxaZEuUPjgTiKuzwYnEuIMAibkPeW9OPqMR9xQP0VDc4Wf_FtK1SQiKJq_LNxJHZukZq9nZC6I_PHlGm8erhdFR5J07H53fvqUTbFp55uBBxMrEQF_NEKY9MGgc48iUrxe1u6_VDnv_Lo-ij7lQnvLXjEvPLOA_N9tauewN2ojTvdHK8YmGkMzu8znDBvPgpdvVmZA&lib=Menqh_A_ipSH44OnxT24LQ_V2iOnTMW6U</p>
+                            <td colspan="6" class="py-12 text-center text-slate-400">
+                                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-vinotinto mb-3"></i>
+                                <p class="text-sm">Conectando y cargando datos desde Google Sheets...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Controles de Paginación -->
+            <div class="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-600">
+                        Mostrando <span id="pageStart" class="font-bold text-slate-800">0</span> a <span id="pageEnd" class="font-bold text-slate-800">0</span> de <span id="pageTotal" class="font-bold text-slate-800">0</span> registros
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="cambiarPagina(-1)" id="btnPrev" class="px-3 py-1.5 border border-slate-300 rounded text-xs font-medium text-slate-600 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                        <i class="fa-solid fa-chevron-left mr-1"></i> Anterior
+                    </button>
+                    <span id="pageIndicator" class="text-xs font-semibold text-slate-700 px-2">Pág. 1</span>
+                    <button onclick="cambiarPagina(1)" id="btnNext" class="px-3 py-1.5 border border-slate-300 rounded text-xs font-medium text-slate-600 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                        Siguiente <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -242,14 +260,19 @@
         </div>
     </div>
 
-    <!-- Script de Integración con Google Sheets API -->
+    <!-- Script de Integración con Google Sheets API y Paginación -->
     <script>
         // PEGA AQUÍ TU URL GENERADA EN APPS SCRIPT:
-        const API_URL = "https://script.google.com/macros/s/TU_SCRIPT_ID_AQUI/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxQorqtxg70bXttP8XKFpo9Lr7iT_WdMaJLUTHUyu1H9GQf8XYNDYT_gvpfSQYTkDW8zw/exec";
 
         let registros = [];
+        let datosActuales = []; // Guarda los datos filtrados actualmente
         let chartEstadosInstance = null;
         let chartVolumenInstance = null;
+
+        // Variables de Paginación
+        let paginaActual = 1;
+        const filasPorPagina = 15; // Muestra 15 registros por página
 
         document.addEventListener("DOMContentLoaded", function() {
             cargarDatos();
@@ -263,30 +286,46 @@
             try {
                 const resp = await fetch(API_URL);
                 registros = await resp.json();
-                renderizarTabla();
+                
+                // Invertimos para ver los más recientes primero (opcional)
+                registros.reverse(); 
+                
+                datosActuales = [...registros];
+                paginaActual = 1; // Reiniciar a la primera página al cargar
+                renderizarTabla(datosActuales);
                 actualizarMetricas();
                 actualizarGraficos();
             } catch (err) {
                 console.error("Error al cargar la base de datos:", err);
                 document.getElementById("tablaBody").innerHTML = `
-                    <tr><td colspan="6" class="py-4 text-center text-rose-600 font-semibold">
-                        Error al conectar con Google Sheets. Verifica la constante API_URL en el código.
+                    <tr><td colspan="6" class="py-6 text-center text-rose-600 font-semibold">
+                        Error al conectar con la Base de Datos. Verifica la URL de la API.
                     </td></tr>`;
             } finally {
                 if(icon) icon.classList.remove("fa-spin");
             }
         }
 
-        function renderizarTabla(datos = registros) {
+        function renderizarTabla(datos = datosActuales) {
+            datosActuales = datos; // Mantenemos el estado de los datos actuales
             const tbody = document.getElementById("tablaBody");
             tbody.innerHTML = "";
 
             if(datos.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No se encontraron registros.</td></tr>`;
+                actualizarPaginacion(0, 0, 0);
                 return;
             }
 
-            datos.forEach((item) => {
+            const totalPaginas = Math.ceil(datos.length / filasPorPagina);
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+            if (paginaActual < 1) paginaActual = 1;
+
+            const inicio = (paginaActual - 1) * filasPorPagina;
+            const fin = inicio + filasPorPagina;
+            const datosPaginados = datos.slice(inicio, fin);
+
+            datosPaginados.forEach((item) => {
                 let badgeColor = item.estado === 'Aprobado' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
                                  item.estado === 'En Revisión' ? 'bg-amber-100 text-amber-800 border-amber-200' :
                                  'bg-rose-100 text-rose-800 border-rose-200';
@@ -303,11 +342,57 @@
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeColor}">${item.estado}</span>
                         </td>
                         <td class="py-3 px-4 text-center">
-                            <button onclick="eliminarRegistro(${item.fila})" class="text-rose-500 hover:text-rose-700 px-1" title="Eliminar en Sheets"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="eliminarRegistro(${item.fila})" class="text-rose-500 hover:text-rose-700 px-1" title="Eliminar en BD"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
             });
+
+            actualizarPaginacion(inicio + 1, Math.min(fin, datos.length), datos.length);
+        }
+
+        function actualizarPaginacion(inicio, fin, total) {
+            document.getElementById('pageStart').innerText = total === 0 ? 0 : inicio;
+            document.getElementById('pageEnd').innerText = fin;
+            document.getElementById('pageTotal').innerText = total;
+            
+            const totalPaginas = Math.ceil(total / filasPorPagina);
+            document.getElementById('pageIndicator').innerText = `Pág. ${paginaActual} de ${totalPaginas || 1}`;
+
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+
+            btnPrev.disabled = paginaActual === 1;
+            btnNext.disabled = paginaActual === totalPaginas || totalPaginas === 0;
+        }
+
+        function cambiarPagina(direccion) {
+            const totalPaginas = Math.ceil(datosActuales.length / filasPorPagina);
+            const nuevaPagina = paginaActual + direccion;
+            
+            if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+                paginaActual = nuevaPagina;
+                renderizarTabla(datosActuales);
+            }
+        }
+
+        function filtrarTabla() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtrados = registros.filter(r => 
+                r.archivo.toLowerCase().includes(query) ||
+                r.liquidacion.toLowerCase().includes(query) ||
+                r.beneficiario.toLowerCase().includes(query) ||
+                r.identificacion.toLowerCase().includes(query)
+            );
+            paginaActual = 1; // Reiniciar página al buscar
+            renderizarTabla(filtrados);
+        }
+
+        function filtrarPorEstado() {
+            const estado = document.getElementById("filterEstado").value;
+            paginaActual = 1; // Reiniciar página al filtrar
+            if(estado === "Todos") renderizarTabla(registros);
+            else renderizarTabla(registros.filter(r => r.estado === estado));
         }
 
         function actualizarMetricas() {
@@ -330,7 +415,7 @@
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
             btn.disabled = true;
-            btn.innerText = "Guardando en Google Sheets...";
+            btn.innerText = "Guardando en BD...";
 
             const nuevo = {
                 action: "create",
@@ -357,7 +442,7 @@
         }
 
         async function eliminarRegistro(fila) {
-            if(confirm("¿Seguro que deseas eliminar esta fila directamente de la hoja de Google Sheets?")) {
+            if(confirm("¿Seguro que deseas eliminar esta fila directamente de la base de datos?")) {
                 try {
                     await fetch(API_URL, {
                         method: "POST",
@@ -368,23 +453,6 @@
                     alert("Error al eliminar el registro.");
                 }
             }
-        }
-
-        function filtrarTabla() {
-            const query = document.getElementById("searchInput").value.toLowerCase();
-            const filtrados = registros.filter(r => 
-                r.archivo.toLowerCase().includes(query) ||
-                r.liquidacion.toLowerCase().includes(query) ||
-                r.beneficiario.toLowerCase().includes(query) ||
-                r.identificacion.toLowerCase().includes(query)
-            );
-            renderizarTabla(filtrados);
-        }
-
-        function filtrarPorEstado() {
-            const estado = document.getElementById("filterEstado").value;
-            if(estado === "Todos") renderizarTabla(registros);
-            else renderizarTabla(registros.filter(r => r.estado === estado));
         }
 
         function exportarCSV() {
