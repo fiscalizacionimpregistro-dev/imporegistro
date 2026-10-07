@@ -452,7 +452,7 @@
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
             btn.disabled = true;
-            btn.innerText = "Subiendo imágenes a Drive y guardando...";
+            btn.innerText = "Guardando cambios...";
 
             const filaVal = document.getElementById("campoFila").value;
             const esEdicion = filaVal !== "" && filaVal !== null;
@@ -478,11 +478,17 @@
             };
 
             try {
+                // Formato URLSearchParams para asegurar compatibilidad con Google Apps Script
+                const data = new URLSearchParams();
+                data.append("payload", JSON.stringify(payload));
+
                 await fetch(POST_API_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify(payload)
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: data.toString()
                 });
 
                 setTimeout(() => {
@@ -490,10 +496,10 @@
                     cargarDatos();
                     btn.disabled = false;
                     btn.innerText = "Guardar Cambios";
-                }, 3500);
+                }, 2000);
 
             } catch (err) {
-                alert("Error de conexión con el servidor.");
+                alert("Error al conectar con el servidor.");
                 btn.disabled = false;
                 btn.innerText = "Guardar Cambios";
             }
