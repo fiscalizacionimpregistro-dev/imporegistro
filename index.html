@@ -452,10 +452,10 @@
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
             btn.disabled = true;
-            btn.innerText = "Guardando cambios...";
+            btn.innerText = "Guardando cambios en Google Sheets...";
 
             const filaVal = document.getElementById("campoFila").value;
-            const esEdicion = filaVal !== "" && filaVal !== null;
+            const esEdicion = filaVal !== "" && filaVal !== null && filaVal !== undefined;
 
             const filesPayload = {};
             for (const k of docKeys) {
@@ -465,9 +465,10 @@
                 }
             }
 
+            // Construir el objeto payload con la fila convertida expresamente a entero
             const payload = {
                 action: esEdicion ? "update" : "create",
-                fila: esEdicion ? parseInt(filaVal) : null,
+                fila: esEdicion ? parseInt(filaVal, 10) : null,
                 archivo: document.getElementById("campoArchivo").value,
                 liquidacion: document.getElementById("campoLiquidacion").value,
                 beneficiario: document.getElementById("campoBeneficiario").value,
@@ -478,27 +479,29 @@
             };
 
             try {
-                const data = new URLSearchParams();
-                data.append("payload", JSON.stringify(payload));
+                // Envío optimizado compatible con Google Apps Script sin bloqueo CORS
+                const formData = new URLSearchParams();
+                formData.append("payload", JSON.stringify(payload));
 
                 await fetch(POST_API_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
+                        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
                     },
-                    body: data.toString()
+                    body: formData.toString()
                 });
 
+                // Damos 3 segundos para que Google Sheets procese y recargamos los datos
                 setTimeout(() => {
                     cerrarModal();
                     cargarDatos();
                     btn.disabled = false;
                     btn.innerText = "Guardar Cambios";
-                }, 2500);
+                }, 3000);
 
             } catch (err) {
-                alert("Error al conectar con el servidor.");
+                alert("Error de conexión al intentar guardar los datos.");
                 btn.disabled = false;
                 btn.innerText = "Guardar Cambios";
             }
