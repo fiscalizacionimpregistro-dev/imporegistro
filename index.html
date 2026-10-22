@@ -235,6 +235,7 @@
 
         let datosGlobales = [];
         let existingDocsMap = {};
+        let docsToDeleteList = []; // Lista para almacenar las URLs de los archivos a eliminar de Drive
         let chartEstadosInstance = null;
         let chartChecklistInstance = null;
 
@@ -403,6 +404,7 @@
             document.getElementById("campoFila").value = "";
             document.getElementById("campoEstado").value = "Pendiente";
             existingDocsMap = {};
+            docsToDeleteList = [];
             generarChecklistDocs({});
             document.getElementById("modalForm").classList.remove("hidden");
         }
@@ -419,7 +421,8 @@
             document.getElementById("campoIdentificacion").value = registro.identificacion;
             document.getElementById("campoEstado").value = registro.estado || "Pendiente";
 
-            existingDocsMap = registro.docs || {};
+            docsToDeleteList = [];
+            existingDocsMap = Object.assign({}, registro.docs || {});
             generarChecklistDocs(existingDocsMap);
             document.getElementById("modalForm").classList.remove("hidden");
         }
@@ -447,7 +450,7 @@
                                 </a>
                                 
                                 <!-- Botón Eliminar PDF (Caneca) -->
-                                <button type="button" onclick="eliminarDocumento('${k}')" title="Eliminar archivo" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
+                                <button type="button" onclick="eliminarDocumento('${k}')" title="Eliminar archivo de Drive" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
                                     <i class="fa-solid fa-trash-can text-sm"></i>
                                 </button>
                             ` : `
@@ -467,7 +470,11 @@
         }
 
         function eliminarDocumento(key) {
-            if (confirm("¿Deseas quitar este enlace de documento? Para confirmar la eliminación debes presionar 'Guardar Cambios'.")) {
+            if (confirm("¿Deseas eliminar este archivo de Google Drive? Para confirmar la eliminación debes presionar 'Guardar Cambios'.")) {
+                const urlAEliminar = existingDocsMap[key];
+                if (urlAEliminar) {
+                    docsToDeleteList.push(urlAEliminar);
+                }
                 existingDocsMap[key] = '';
                 generarChecklistDocs(existingDocsMap);
             }
@@ -493,7 +500,7 @@
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
             btn.disabled = true;
-            btn.innerText = "Guardando cambios en Google Sheets...";
+            btn.innerText = "Guardando cambios en Google Sheets y Drive...";
 
             const filaVal = document.getElementById("campoFila").value;
             const esEdicion = filaVal !== "" && filaVal !== null && filaVal !== undefined;
@@ -506,7 +513,6 @@
                 }
             }
 
-            // Construir el objeto payload con la fila convertida expresamente a entero
             const payload = {
                 action: esEdicion ? "update" : "create",
                 fila: esEdicion ? parseInt(filaVal, 10) : null,
@@ -516,11 +522,11 @@
                 identificacion: document.getElementById("campoIdentificacion").value,
                 estado: document.getElementById("campoEstado").value,
                 files: filesPayload,
-                existingDocs: existingDocsMap
+                existingDocs: existingDocsMap,
+                docsToDelete: docsToDeleteList
             };
 
             try {
-                // Envío optimizado compatible con Google Apps Script sin bloqueo CORS
                 const formData = new URLSearchParams();
                 formData.append("payload", JSON.stringify(payload));
 
@@ -533,7 +539,6 @@
                     body: formData.toString()
                 });
 
-                // Damos 3 segundos para que Google Sheets procese y recargamos los datos
                 setTimeout(() => {
                     cerrarModal();
                     cargarDatos();
