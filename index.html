@@ -235,7 +235,7 @@
 
         let datosGlobales = [];
         let existingDocsMap = {};
-        let docsToDeleteList = []; // Lista para almacenar las URLs de los archivos a eliminar de Drive
+        let docsToDeleteList = [];
         let chartEstadosInstance = null;
         let chartChecklistInstance = null;
 
@@ -250,6 +250,17 @@
             
             const scriptsAntiguos = document.querySelectorAll('script[src*="procesarDatosGoogle"]');
             scriptsAntiguos.forEach(s => s.remove());
+
+            script.onerror = function() {
+                document.getElementById("tablaCuerpo").innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-6 text-red-500 font-medium">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+                            <p>Error de conexión con Google Apps Script.</p>
+                            <p class="text-xs text-slate-400 mt-1">Verifica que el despliegue esté configurado con acceso público ("Cualquiera").</p>
+                        </td>
+                    </tr>`;
+            };
 
             document.body.appendChild(script);
         }
