@@ -280,9 +280,9 @@
     <script>
         const POST_API_URL = "https://script.google.com/macros/s/AKfycbxdrul-RPZ-ytPIkkPQIVi43lWwEecNltTxH3h5tBvOqV6B9jsjJvcl-S3xLPgniOIb2w/exec";
 
-        const docKeys = ['sar', 'vur', 'req_orip', 'escritura', 'boleta', 'informe', 'resp_orip', 'req_tesoreria', 'resp_tesoreria', 'invitacion'];
+        const docKeys = ['sap', 'vur', 'req_orip', 'escritura', 'boleta', 'informe', 'resp_orip', 'req_tesoreria', 'resp_tesoreria', 'invitacion'];
         const docNames = {
-            sar: '1. Imagen SAR', vur: '2. Imagen VUR', req_orip: '3. Requerimiento ORIP',
+            sap: '1. Imagen SAP', vur: '2. Imagen VUR', req_orip: '3. Requerimiento ORIP',
             escritura: '4. Escritura', boleta: '5. Boleta Fiscal', informe: '6. Informe de Investigación',
             resp_orip: '7. Respuesta ORIP', req_tesoreria: '8. Requerimiento Tesorería',
             resp_tesoreria: '9. Respuesta Tesorería', invitacion: '10. Envío de Invitación'
@@ -499,7 +499,7 @@
                 "Identificación": item.identificacion,
                 "Estado": item.estado,
                 "Última Modificación": item.ultimaModificacion,
-                "Imagen SAR": item.docs.sar,
+                "Imagen SAP": item.docs.sap,
                 "Imagen VUR": item.docs.vur,
                 "Requerimiento ORIP": item.docs.req_orip,
                 "Escritura": item.docs.escritura,
