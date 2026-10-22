@@ -304,7 +304,11 @@
             tbody.innerHTML = datos.map(item => {
                 let contadorDocs = 0;
                 if (item.docs) {
-                    Object.values(item.docs).forEach(url => { if (url && url.length > 5) contadorDocs++; });
+                    Object.values(item.docs).forEach(url => {
+                        if (url && typeof url === 'string' && url.trim().length > 10 && url.indexOf('http') === 0) {
+                            contadorDocs++;
+                        }
+                    });
                 }
 
                 let badgeColor = "bg-yellow-100 text-yellow-800";
@@ -354,7 +358,11 @@
 
                 let docsCount = 0;
                 if (item.docs) {
-                    Object.values(item.docs).forEach(url => { if (url && url.length > 5) docsCount++; });
+                    Object.values(item.docs).forEach(url => {
+                        if (url && typeof url === 'string' && url.trim().length > 10 && url.indexOf('http') === 0) {
+                            docsCount++;
+                        }
+                    });
                 }
 
                 if (docsCount === 10) completos++;
@@ -441,8 +449,8 @@
         function generarChecklistDocs(docs) {
             const container = document.getElementById("contenedorDocs");
             container.innerHTML = docKeys.map(k => {
-                const url = docs[k] || '';
-                const tieneDoc = url.length > 5;
+                const url = (docs[k] || '').trim();
+                const tieneDoc = url.length > 10 && url.indexOf('http') === 0;
 
                 return `
                     <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition duration-150 text-xs">
@@ -481,10 +489,10 @@
         }
 
         function eliminarDocumento(key) {
-            if (confirm("¿Deseas eliminar este archivo de Google Drive? Para confirmar la eliminación debes presionar 'Guardar Cambios'.")) {
+            if (confirm("¿Deseas eliminar este archivo de Google Drive? Recuerda presionar 'Guardar Cambios' para confirmar.")) {
                 const urlAEliminar = existingDocsMap[key];
-                if (urlAEliminar) {
-                    docsToDeleteList.push(urlAEliminar);
+                if (urlAEliminar && urlAEliminar.trim() !== '') {
+                    docsToDeleteList.push(urlAEliminar.trim());
                 }
                 existingDocsMap[key] = '';
                 generarChecklistDocs(existingDocsMap);
