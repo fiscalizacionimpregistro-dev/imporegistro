@@ -678,11 +678,61 @@
                 const url = (docs[k] || '').trim();
                 const tieneDoc = esUrlValida(url);
 
+                // Contenido específico para el Ítem 1 vs los demás ítems
+                let panelContent = '';
+                if (k === 'doc1') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Liquidación</label>
+                                <input type="date" id="fecha_liq_doc1" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">No. Matrícula Inmobiliaria</label>
+                                <input type="text" id="mat_doc1" placeholder="Ej: 370-12345" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nro. Doc. Registro</label>
+                                <input type="text" id="nro_doc_reg_doc1" placeholder="Número de documento..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Documento</label>
+                                <input type="date" id="fecha_doc1" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Origen Doc</label>
+                                <input type="text" id="origen_doc1" placeholder="Entidad o dependencia origen..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Valor Impuesto ($)</label>
+                                <input type="number" step="0.01" id="val_impuesto_doc1" placeholder="0.00" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Valor Total del Pago en el Reporte ($)</label>
+                                <input type="number" step="0.01" id="val_total_doc1" placeholder="0.00" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Observaciones / Notas del Documento</label>
+                                <input type="text" id="obs_${k}" placeholder="Agregar nota o número de radicado..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha del Documento</label>
+                                <input type="date" id="fecha_${k}" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                }
+
                 return `
                     <div class="bg-slate-50 rounded-xl border border-slate-200/60 overflow-hidden transition duration-150">
                         <div class="flex items-center justify-between p-2.5 hover:bg-slate-100 text-xs">
                             <div class="flex items-center space-x-2 w-1/2">
-                                <button type="button" onclick="toggleDesplegable('${k}')" title="Desplegar campos" class="text-slate-400 hover:text-vinotinto p-1 transition">
+                                <button type="button" onclick="toggleDesplegable('${k}')" title="Desplegar campos detallados" class="text-slate-400 hover:text-vinotinto p-1 transition">
                                     <i id="icon_${k}" class="fa-solid fa-chevron-down text-xs"></i>
                                 </button>
                                 <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i>
@@ -712,16 +762,7 @@
 
                         <!-- Panel Desplegable -->
                         <div id="panel_${k}" class="hidden p-3 bg-white border-t border-slate-200/80 space-y-2 text-xs">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Observaciones / Notas del Documento</label>
-                                    <input type="text" id="obs_${k}" placeholder="Agregar nota o número de radicado..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha del Documento</label>
-                                    <input type="date" id="fecha_${k}" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-                                </div>
-                            </div>
+                            ${panelContent}
                         </div>
                     </div>
                 `;
