@@ -746,29 +746,28 @@
                 docsToDelete: docsToDeleteList
             };
 
-            // Envío seguro mediante Script Tag / JSONP para evitar bloqueos
-            const script = document.createElement('script');
-            const payloadEncoded = encodeURIComponent(JSON.stringify(payload));
-            const callbackName = 'respuestaGuardarScript_' + new Date().getTime();
+            try {
+                // Envío por POST usando text/plain para evitar el preflight de CORS sin restringir el tamaño del archivo PDF
+                await fetch(POST_API_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
 
-            window[callbackName] = function(res) {
-                delete window[callbackName];
-                script.remove();
-                
-                cerrarModal();
-                cargarDatos();
+                // Esperamos un tiempo prudencial para la respuesta en segundo plano de Google Drive y recargamos
+                setTimeout(() => {
+                    cerrarModal();
+                    cargarDatos();
+                    btn.disabled = false;
+                    btn.innerText = "Guardar Cambios";
+                }, 4000);
+
+            } catch (err) {
+                alert("Ocurrió un error en la conexión al enviar los datos.");
                 btn.disabled = false;
                 btn.innerText = "Guardar Cambios";
-            };
-
-            script.src = `${POST_API_URL}?action=guardar&callback=${callbackName}&payload=${payloadEncoded}`;
-            script.onerror = function() {
-                alert("Ocurrió un inconveniente al guardar. Verifica el tamaño del archivo.");
-                btn.disabled = false;
-                btn.innerText = "Guardar Cambios";
-            };
-
-            document.body.appendChild(script);
+            }
         }
 
         function readFileAsBase64(file) {
