@@ -720,7 +720,7 @@
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
             btn.disabled = true;
-            btn.innerText = "Guardando cambios...";
+            btn.innerText = "Subiendo archivo y guardando cambios...";
 
             const filaVal = document.getElementById("campoFila").value;
             const esEdicion = filaVal !== "" && filaVal !== null && filaVal !== undefined;
@@ -746,29 +746,29 @@
                 docsToDelete: docsToDeleteList
             };
 
-            try {
-                const formData = new URLSearchParams();
-                formData.append("payload", JSON.stringify(payload));
+            // Envío seguro mediante Script Tag / JSONP para evitar bloqueos
+            const script = document.createElement('script');
+            const payloadEncoded = encodeURIComponent(JSON.stringify(payload));
+            const callbackName = 'respuestaGuardarScript_' + new Date().getTime();
 
-                await fetch(POST_API_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
-                    body: formData.toString()
-                });
-
-                setTimeout(() => {
-                    cerrarModal();
-                    cargarDatos();
-                    btn.disabled = false;
-                    btn.innerText = "Guardar Cambios";
-                }, 3000);
-
-            } catch (err) {
-                alert("Error de conexión al guardar.");
+            window[callbackName] = function(res) {
+                delete window[callbackName];
+                script.remove();
+                
+                cerrarModal();
+                cargarDatos();
                 btn.disabled = false;
                 btn.innerText = "Guardar Cambios";
-            }
+            };
+
+            script.src = `${POST_API_URL}?action=guardar&callback=${callbackName}&payload=${payloadEncoded}`;
+            script.onerror = function() {
+                alert("Ocurrió un inconveniente al guardar. Verifica el tamaño del archivo.");
+                btn.disabled = false;
+                btn.innerText = "Guardar Cambios";
+            };
+
+            document.body.appendChild(script);
         }
 
         function readFileAsBase64(file) {
