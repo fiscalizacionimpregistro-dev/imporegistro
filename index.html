@@ -163,7 +163,7 @@
 
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                         <div>
-                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Checklist Completo (10/10)</p>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Checklist Completo (16/16)</p>
                             <h3 id="kpiCompletos" class="text-2xl font-bold text-blue-600 mt-1">0</h3>
                         </div>
                         <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
@@ -278,14 +278,32 @@
 
     <!-- JavaScript Integrado -->
     <script>
-        const POST_API_URL = "https://script.google.com/macros/s/AKfycbxdrul-RPZ-ytPIkkPQIVi43lWwEecNltTxH3h5tBvOqV6B9jsjJvcl-S3xLPgniOIb2w/exec";
+        const POST_API_URL = "https://script.google.com/macros/s/AKfycbyJRgfNuBO8hUdtfsJnYVEo-e94-0LYawcSpL_ZjE69faw4j7mEtpzgH4W7wZG4Gj3JHg/exec";
 
-        const docKeys = ['sap', 'vur', 'req_orip', 'escritura', 'boleta', 'informe', 'resp_orip', 'req_tesoreria', 'resp_tesoreria', 'invitacion'];
+        const docKeys = [
+            'sap_pdtir', 'vur_orip', 'req_orip', 'resp_orip', 'req_tesoreria',
+            'cert_tesoreria', 'escritura', 'liq_bf', 'carta_invitacion', 'informe_inv',
+            'denuncia_penal', 'oficio_orip_snr', 'derechos_peticion', 'soporte_pago',
+            'comunicado_orip', 'otros'
+        ];
+
         const docNames = {
-            sap: '1. Imagen SAP', vur: '2. Imagen VUR', req_orip: '3. Requerimiento ORIP',
-            escritura: '4. Escritura', boleta: '5. Boleta Fiscal', informe: '6. Informe de Investigación',
-            resp_orip: '7. Respuesta ORIP', req_tesoreria: '8. Requerimiento Tesorería',
-            resp_tesoreria: '9. Respuesta Tesorería', invitacion: '10. Envío de Invitación'
+            sap_pdtir: '1. ESTADO DE LIQUIDACIÓN EN SAP Y PDTIR',
+            vur_orip: '2. FOLIO DE MATRICULA EN VUR ORIP',
+            req_orip: '3. REQUERIMIENTO DE INFORMACION A LA ORIP',
+            resp_orip: '4. RESPUESTA DE LA ORIP',
+            req_tesoreria: '5. REQUERIMIENTO CERTIFICACION DEL PAGO A TESORERIA',
+            cert_tesoreria: '6. CERTIFICACION DE TESORERIA',
+            escritura: '7. ESCRITURA PUBLICA PDTIR',
+            liq_bf: '8. LIQUIDACION BF DE PDTIR',
+            carta_invitacion: '9. CARTA DE INVITACION A PAGO',
+            informe_inv: '10. INFORME INVESTIGACION TRIBUTARIA',
+            denuncia_penal: '11. DENUNCIA PENAL (FISCALIA)',
+            oficio_orip_snr: '12. OFICIO REMISION A ORIP Y SNR',
+            derechos_peticion: '13. DERECHOS DE PETICION Y RESPUESTAS',
+            soporte_pago: '14. SOPORTE DE PAGO BF Y VERIFICACION',
+            comunicado_orip: '15. COMUNICADO A LA ORIP DEL PAGO',
+            otros: '16. OTROS'
         };
 
         let datosGlobales = [];
@@ -295,7 +313,6 @@
         let chartEstadosInstance = null;
         let chartChecklistInstance = null;
 
-        // Variables de Paginación
         let paginaActual = 1;
         let registrosPorPagina = 25;
         let estadoFiltroActivo = 'TODOS';
@@ -334,7 +351,6 @@
         function filtrarPorEstado(estado) {
             estadoFiltroActivo = estado;
             
-            // Actualizar apariencia de botones
             ['TODOS', 'Pendiente', 'En Revisión', 'Aprobado', 'INCOMPLETOS'].forEach(est => {
                 const btn = document.getElementById(`btnFiltro${est}`);
                 if (btn) {
@@ -367,7 +383,7 @@
                             if (url && typeof url === 'string' && url.trim().length > 10 && url.indexOf('http') === 0) docsCount++;
                         });
                     }
-                    coincideEstado = docsCount < 10;
+                    coincideEstado = docsCount < 16;
                 } else if (estadoFiltroActivo !== 'TODOS') {
                     coincideEstado = item.estado === estadoFiltroActivo;
                 }
@@ -388,7 +404,6 @@
                 return;
             }
 
-            // Paginación
             const inicio = (paginaActual - 1) * registrosPorPagina;
             const fin = inicio + registrosPorPagina;
             const datosPagina = datosFiltrados.slice(inicio, fin);
@@ -417,7 +432,7 @@
                         </td>
                         <td class="py-2.5 px-4 text-center">
                             <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-                                <i class="fa-solid fa-paperclip mr-1"></i>${contadorDocs}/10
+                                <i class="fa-solid fa-paperclip mr-1"></i>${contadorDocs}/16
                             </span>
                         </td>
                         <td class="py-2.5 px-4 text-slate-400 text-[11px]">${item.ultimaModificacion || 'Sin registro'}</td>
@@ -456,7 +471,6 @@
             renderizarTabla();
         }
 
-        // Visor Modal PDF
         function abrirVisorPdf(url, tituloDoc) {
             if (!url) return;
             const modal = document.getElementById("modalPdfViewer");
@@ -464,7 +478,6 @@
             const btnNew = document.getElementById("btnPdfPestanaNueva");
             document.getElementById("pdfTituloModal").innerText = tituloDoc || "Previsualización de Documento";
 
-            // Convertir link de Drive a Vista Previa embebida
             let previewUrl = url;
             if (url.includes("drive.google.com")) {
                 const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -485,7 +498,6 @@
             modal.classList.add("hidden");
         }
 
-        // Exportación a Excel
         function exportarExcel() {
             if (datosFiltrados.length === 0) {
                 alert("No hay datos para exportar.");
@@ -499,16 +511,22 @@
                 "Identificación": item.identificacion,
                 "Estado": item.estado,
                 "Última Modificación": item.ultimaModificacion,
-                "Imagen SAP": item.docs.sap,
-                "Imagen VUR": item.docs.vur,
-                "Requerimiento ORIP": item.docs.req_orip,
-                "Escritura": item.docs.escritura,
-                "Boleta Fiscal": item.docs.boleta,
-                "Informe Investigación": item.docs.informe,
-                "Respuesta ORIP": item.docs.resp_orip,
-                "Requerimiento Tesorería": item.docs.req_tesoreria,
-                "Respuesta Tesorería": item.docs.resp_tesoreria,
-                "Envío Invitación": item.docs.invitacion
+                "ESTADO DE LIQUIDACIÓN EN SAP Y PDTIR": item.docs.sap_pdtir,
+                "FOLIO DE MATRICULA EN VUR ORIP": item.docs.vur_orip,
+                "REQUERIMIENTO DE INFORMACION A LA ORIP": item.docs.req_orip,
+                "RESPUESTA DE LA ORIP": item.docs.resp_orip,
+                "REQUERIMIENTO CERTIFICACION DEL PAGO A TESORERIA": item.docs.req_tesoreria,
+                "CERTIFICACION DE TESORERIA": item.docs.cert_tesoreria,
+                "ESCRITURA PUBLICA PDTIR": item.docs.escritura,
+                "LIQUIDACION BF DE PDTIR": item.docs.liq_bf,
+                "CARTA DE INVITACION A PAGO": item.docs.carta_invitacion,
+                "INFORME INVESTIGACION TRIBUTARIA": item.docs.informe_inv,
+                "DENUNCIA PENAL (FISCALIA)": item.docs.denuncia_penal,
+                "OFICIO REMISION A ORIP Y SNR": item.docs.oficio_orip_snr,
+                "DERECHOS DE PETICION Y RESPUESTAS": item.docs.derechos_peticion,
+                "SOPORTE DE PAGO BF Y VERIFICACION": item.docs.soporte_pago,
+                "COMUNICADO A LA ORIP DEL PAGO": item.docs.comunicado_orip,
+                "OTROS": item.docs.otros
             }));
 
             const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -539,7 +557,7 @@
         function actualizarDashboard(datos) {
             let total = datos.length;
             let aprobados = 0, pendientes = 0, enRevision = 0, rechazados = 0, completos = 0;
-            let rango03 = 0, rango46 = 0, rango79 = 0, rango10 = 0;
+            let rango04 = 0, rango58 = 0, rango915 = 0, rango16 = 0;
 
             datos.forEach(item => {
                 if (item.estado === "Aprobado") aprobados++;
@@ -554,11 +572,11 @@
                     });
                 }
 
-                if (docsCount === 10) completos++;
-                if (docsCount <= 3) rango03++;
-                else if (docsCount <= 6) rango46++;
-                else if (docsCount <= 9) rango79++;
-                else rango10++;
+                if (docsCount === 16) completos++;
+                if (docsCount <= 4) rango04++;
+                else if (docsCount <= 8) rango58++;
+                else if (docsCount <= 15) rango915++;
+                else rango16++;
             });
 
             document.getElementById("kpiTotal").innerText = total;
@@ -585,10 +603,10 @@
             chartChecklistInstance = new Chart(ctxChecklist, {
                 type: 'bar',
                 data: {
-                    labels: ['0 - 3 Docs', '4 - 6 Docs', '7 - 9 Docs', '10 Docs (Completo)'],
+                    labels: ['0 - 4 Docs', '5 - 8 Docs', '9 - 15 Docs', '16 Docs (Completo)'],
                     datasets: [{
                         label: 'Número de Expedientes',
-                        data: [rango03, rango46, rango79, rango10],
+                        data: [rango04, rango58, rango915, rango16],
                         backgroundColor: '#6b1d2f'
                     }]
                 },
