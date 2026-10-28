@@ -18,6 +18,7 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
     <div>
+        <!-- Encabezado Principal -->
         <header class="bg-vinotinto text-white shadow-lg sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-3">
@@ -28,6 +29,7 @@
                     </div>
                 </div>
 
+                <!-- Navegación por Pestañas -->
                 <div class="flex bg-slate-900 bg-opacity-30 p-1 rounded-xl space-x-1">
                     <button id="tabBtnRegistros" onclick="cambiarVista('registros')" class="px-4 py-2 rounded-lg text-sm font-semibold transition bg-white text-vinotinto shadow">
                         <i class="fa-solid fa-table-list mr-2"></i>Registros
@@ -50,7 +52,10 @@
             </div>
         </header>
 
+        <!-- Contenido Principal -->
         <main class="max-w-7xl mx-auto px-4 py-6">
+            
+            <!-- VISTA 1: TABLA DE REGISTROS -->
             <section id="vistaRegistros" class="space-y-4">
                 <div class="bg-white p-4 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4 justify-between items-center">
                     <div class="relative w-full lg:w-80">
@@ -118,6 +123,7 @@
                 </div>
             </section>
 
+            <!-- VISTA 2: DASHBOARD -->
             <section id="vistaDashboard" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
@@ -183,12 +189,14 @@
                     </div>
                 </div>
             </section>
+
         </main>
     </div>
 
     <!-- Modal Formulario -->
     <div id="modalForm" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            
             <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
                 <h3 id="modalTitulo" class="text-lg font-bold text-slate-800">Editar Liquidación y Documentos</h3>
                 <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 text-lg">
@@ -232,9 +240,25 @@
                     <div id="contenedorDocs" class="space-y-3"></div>
                 </div>
 
+                <!-- BARRA DE PROGRESO CON ANIMACIÓN -->
+                <div id="boxProgreso" class="hidden p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-700">
+                        <span id="textoProgreso" class="flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-vinotinto animate-bounce"></i>
+                            Subiendo y procesando archivos...
+                        </span>
+                        <span id="porcentajeProgreso" class="text-vinotinto font-bold">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                        <div id="barraProgreso" class="bg-vinotinto h-2.5 rounded-full transition-all duration-300 shadow-inner" style="width: 0%"></div>
+                    </div>
+                </div>
+
                 <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
-                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover-bg-vinotinto">Guardar Cambios</button>
+                    <button type="button" id="btnCancelar" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
+                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover-bg-vinotinto flex items-center space-x-2">
+                        <span id="btnGuardarTexto">Guardar Cambios</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -263,16 +287,13 @@
     </div>
 
     <script>
-        
         const POST_API_URL = "https://script.google.com/macros/s/AKfycbxa1rbonAbppcnjXxt_g-s89RDV-qujH6ZQ5R5FwaCO8xAjpc0w9Gi4ZAF2V3zTWZnGUw/exec";
 
-        // Tus 16 claves sencillas doc1...doc16
         const docKeys = [
             'doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6', 'doc7', 'doc8',
             'doc9', 'doc10', 'doc11', 'doc12', 'doc13', 'doc14', 'doc15', 'doc16'
         ];
 
-        // Tus 16 nombres nuevos requeridos
         const docNames = {
             doc1: '1. ESTADO DE LIQUIDACIÓN EN SAP Y PDTIR',
             doc2: '2. FOLIO DE MATRICULA EN VUR ORIP',
@@ -614,6 +635,7 @@
             document.getElementById("registroForm").reset();
             document.getElementById("campoFila").value = "";
             document.getElementById("campoEstado").value = "Pendiente";
+            document.getElementById("boxProgreso").classList.add("hidden");
             existingDocsMap = {};
             docsToDeleteList = [];
             generarChecklistDocs({});
@@ -631,6 +653,7 @@
             document.getElementById("campoBeneficiario").value = registro.beneficiario;
             document.getElementById("campoIdentificacion").value = registro.identificacion;
             document.getElementById("campoEstado").value = registro.estado || "Pendiente";
+            document.getElementById("boxProgreso").classList.add("hidden");
 
             docsToDeleteList = [];
             existingDocsMap = Object.assign({}, registro.docs || {});
@@ -705,19 +728,51 @@
         async function guardarRegistro(e) {
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
+            const btnTexto = document.getElementById("btnGuardarTexto");
+            const btnCancelar = document.getElementById("btnCancelar");
+            const boxProgreso = document.getElementById("boxProgreso");
+            const barraProgreso = document.getElementById("barraProgreso");
+            const textoProgreso = document.getElementById("textoProgreso");
+            const porcentajeProgreso = document.getElementById("porcentajeProgreso");
+
             btn.disabled = true;
-            btn.innerText = "Guardando cambios...";
+            btnCancelar.disabled = true;
+            btnTexto.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Guardando...`;
+
+            boxProgreso.classList.remove("hidden");
+            barraProgreso.style.width = "10%";
+            porcentajeProgreso.innerText = "10%";
+            textoProgreso.innerHTML = `<i class="fa-solid fa-gear fa-spin text-vinotinto"></i> Preparando archivos...`;
 
             const filaVal = document.getElementById("campoFila").value;
             const esEdicion = filaVal !== "" && filaVal !== null && filaVal !== undefined;
 
             const filesPayload = {};
+            let hayArchivosNuevos = false;
+
             for (const k of docKeys) {
                 const input = document.getElementById(`file_${k}`);
                 if (input && input.files && input.files.length > 0) {
+                    hayArchivosNuevos = true;
                     filesPayload[k] = await readFileAsBase64(input.files[0]);
                 }
             }
+
+            // Animación simulada de avance durante la transmisión
+            let progreso = 20;
+            const intervaloAnimacion = setInterval(() => {
+                if (progreso < 90) {
+                    progreso += 5;
+                    barraProgreso.style.width = `${progreso}%`;
+                    porcentajeProgreso.innerText = `${progreso}%`;
+
+                    if (progreso < 50) {
+                        textoProgreso.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-vinotinto animate-bounce"></i> Subiendo archivos a Google Drive...`;
+                    } else {
+                        textoProgreso.innerHTML = `<i class="fa-solid fa-database text-vinotinto animate-pulse"></i> Sincronizando con Google Sheets...`;
+                    }
+                }
+            }, 300);
 
             const payload = {
                 action: esEdicion ? "update" : "create",
@@ -740,17 +795,27 @@
                     body: JSON.stringify(payload)
                 });
 
+                // Al completar la petición fetch, llevamos la barra al 100%
+                clearInterval(intervaloAnimacion);
+                barraProgreso.style.width = "100%";
+                porcentajeProgreso.innerText = "100%";
+                textoProgreso.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> ¡Guardado completado!`;
+
                 setTimeout(() => {
                     cerrarModal();
                     cargarDatos();
                     btn.disabled = false;
-                    btn.innerText = "Guardar Cambios";
-                }, 3500);
+                    btnCancelar.disabled = false;
+                    btnTexto.innerText = "Guardar Cambios";
+                }, 1200);
 
             } catch (err) {
+                clearInterval(intervaloAnimacion);
                 alert("Error de conexión al guardar.");
                 btn.disabled = false;
-                btn.innerText = "Guardar Cambios";
+                btnCancelar.disabled = false;
+                btnTexto.innerText = "Guardar Cambios";
+                boxProgreso.classList.add("hidden");
             }
         }
 
