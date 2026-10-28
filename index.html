@@ -18,7 +18,6 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
     <div>
-        <!-- Encabezado Principal -->
         <header class="bg-vinotinto text-white shadow-lg sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-3">
@@ -29,7 +28,6 @@
                     </div>
                 </div>
 
-                <!-- Navegación por Pestañas -->
                 <div class="flex bg-slate-900 bg-opacity-30 p-1 rounded-xl space-x-1">
                     <button id="tabBtnRegistros" onclick="cambiarVista('registros')" class="px-4 py-2 rounded-lg text-sm font-semibold transition bg-white text-vinotinto shadow">
                         <i class="fa-solid fa-table-list mr-2"></i>Registros
@@ -52,10 +50,7 @@
             </div>
         </header>
 
-        <!-- Contenido Principal -->
         <main class="max-w-7xl mx-auto px-4 py-6">
-            
-            <!-- VISTA 1: TABLA DE REGISTROS -->
             <section id="vistaRegistros" class="space-y-4">
                 <div class="bg-white p-4 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4 justify-between items-center">
                     <div class="relative w-full lg:w-80">
@@ -123,7 +118,6 @@
                 </div>
             </section>
 
-            <!-- VISTA 2: DASHBOARD -->
             <section id="vistaDashboard" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
@@ -189,14 +183,12 @@
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
 
     <!-- Modal Formulario -->
     <div id="modalForm" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            
             <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
                 <h3 id="modalTitulo" class="text-lg font-bold text-slate-800">Editar Liquidación y Documentos</h3>
                 <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 text-lg">
@@ -240,17 +232,6 @@
                     <div id="contenedorDocs" class="space-y-3"></div>
                 </div>
 
-                <!-- BARRA DE PROGRESO -->
-                <div id="boxProgreso" class="hidden p-3 bg-slate-100 rounded-xl space-y-2">
-                    <div class="flex justify-between text-xs font-semibold text-slate-700">
-                        <span id="textoProgreso">Subiendo archivos...</span>
-                        <span id="porcentajeProgreso">0%</span>
-                    </div>
-                    <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                        <div id="barraProgreso" class="bg-vinotinto h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
-
                 <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
                     <button type="button" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
                     <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover-bg-vinotinto">Guardar Cambios</button>
@@ -281,34 +262,33 @@
         </div>
     </div>
 
-    <!-- JavaScript Integrado -->
     <script>
         const POST_API_URL = "https://script.google.com/macros/s/AKfycbyJRgfNuBO8hUdtfsJnYVEo-e94-0LYawcSpL_ZjE69faw4j7mEtpzgH4W7wZG4Gj3JHg/exec";
 
+        // Tus 16 claves sencillas doc1...doc16
         const docKeys = [
-            'sap_pdtir', 'vur_orip', 'req_orip', 'resp_orip', 'req_tesoreria',
-            'cert_tesoreria', 'escritura', 'liq_bf', 'carta_invitacion', 'informe_inv',
-            'denuncia_penal', 'oficio_orip_snr', 'derechos_peticion', 'soporte_pago',
-            'comunicado_orip', 'otros'
+            'doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6', 'doc7', 'doc8',
+            'doc9', 'doc10', 'doc11', 'doc12', 'doc13', 'doc14', 'doc15', 'doc16'
         ];
 
+        // Tus 16 nombres nuevos requeridos
         const docNames = {
-            sap_pdtir: '1. ESTADO DE LIQUIDACIÓN EN SAP Y PDTIR',
-            vur_orip: '2. FOLIO DE MATRICULA EN VUR ORIP',
-            req_orip: '3. REQUERIMIENTO DE INFORMACION A LA ORIP',
-            resp_orip: '4. RESPUESTA DE LA ORIP',
-            req_tesoreria: '5. REQUERIMIENTO CERTIFICACION DEL PAGO A TESORERIA',
-            cert_tesoreria: '6. CERTIFICACION DE TESORERIA',
-            escritura: '7. ESCRITURA PUBLICA PDTIR',
-            liq_bf: '8. LIQUIDACION BF DE PDTIR',
-            carta_invitacion: '9. CARTA DE INVITACION A PAGO',
-            informe_inv: '10. INFORME INVESTIGACION TRIBUTARIA',
-            denuncia_penal: '11. DENUNCIA PENAL (FISCALIA)',
-            oficio_orip_snr: '12. OFICIO REMISION A ORIP Y SNR',
-            derechos_peticion: '13. DERECHOS DE PETICION Y RESPUESTAS',
-            soporte_pago: '14. SOPORTE DE PAGO BF Y VERIFICACION',
-            comunicado_orip: '15. COMUNICADO A LA ORIP DEL PAGO',
-            otros: '16. OTROS'
+            doc1: '1. ESTADO DE LIQUIDACIÓN EN SAP Y PDTIR',
+            doc2: '2. FOLIO DE MATRICULA EN VUR ORIP',
+            doc3: '3. REQUERIMIENTO DE INFORMACION A LA ORIP',
+            doc4: '4. RESPUESTA DE LA ORIP',
+            doc5: '5. REQUERIMIENTO CERTIFICACION DEL PAGO A TESORERIA',
+            doc6: '6. CERTIFICACION DE TESORERIA',
+            doc7: '7. ESCRITURA PUBLICA PDTIR',
+            doc8: '8. LIQUIDACION BF DE PDTIR',
+            doc9: '9. CARTA DE INVITACION A PAGO',
+            doc10: '10. INFORME INVESTIGACION TRIBUTARIA',
+            doc11: '11. DENUNCIA PENAL (FISCALIA)',
+            doc12: '12. OFICIO REMISION A ORIP Y SNR',
+            doc13: '13. DERECHOS DE PETICION Y RESPUESTAS',
+            doc14: '14. SOPORTE DE PAGO BF Y VERIFICACION',
+            doc15: '15. COMUNICADO A LA ORIP DEL PAGO',
+            doc16: '16. OTROS'
         };
 
         let datosGlobales = [];
@@ -520,22 +500,22 @@
                 "Identificación": item.identificacion,
                 "Estado": item.estado,
                 "Última Modificación": item.ultimaModificacion,
-                "ESTADO DE LIQUIDACIÓN EN SAP Y PDTIR": item.docs.sap_pdtir,
-                "FOLIO DE MATRICULA EN VUR ORIP": item.docs.vur_orip,
-                "REQUERIMIENTO DE INFORMACION A LA ORIP": item.docs.req_orip,
-                "RESPUESTA DE LA ORIP": item.docs.resp_orip,
-                "REQUERIMIENTO CERTIFICACION DEL PAGO A TESORERIA": item.docs.req_tesoreria,
-                "CERTIFICACION DE TESORERIA": item.docs.cert_tesoreria,
-                "ESCRITURA PUBLICA PDTIR": item.docs.escritura,
-                "LIQUIDACION BF DE PDTIR": item.docs.liq_bf,
-                "CARTA DE INVITACION A PAGO": item.docs.carta_invitacion,
-                "INFORME INVESTIGACION TRIBUTARIA": item.docs.informe_inv,
-                "DENUNCIA PENAL (FISCALIA)": item.docs.denuncia_penal,
-                "OFICIO REMISION A ORIP Y SNR": item.docs.oficio_orip_snr,
-                "DERECHOS DE PETICION Y RESPUESTAS": item.docs.derechos_peticion,
-                "SOPORTE DE PAGO BF Y VERIFICACION": item.docs.soporte_pago,
-                "COMUNICADO A LA ORIP DEL PAGO": item.docs.comunicado_orip,
-                "OTROS": item.docs.otros
+                "1. ESTADO DE LIQUIDACIÓN EN SAP Y PDTIR": item.docs.doc1,
+                "2. FOLIO DE MATRICULA EN VUR ORIP": item.docs.doc2,
+                "3. REQUERIMIENTO DE INFORMACION A LA ORIP": item.docs.doc3,
+                "4. RESPUESTA DE LA ORIP": item.docs.doc4,
+                "5. REQUERIMIENTO CERTIFICACION DEL PAGO A TESORERIA": item.docs.doc5,
+                "6. CERTIFICACION DE TESORERIA": item.docs.doc6,
+                "7. ESCRITURA PUBLICA PDTIR": item.docs.doc7,
+                "8. LIQUIDACION BF DE PDTIR": item.docs.doc8,
+                "9. CARTA DE INVITACION A PAGO": item.docs.doc9,
+                "10. INFORME INVESTIGACION TRIBUTARIA": item.docs.doc10,
+                "11. DENUNCIA PENAL (FISCALIA)": item.docs.doc11,
+                "12. OFICIO REMISION A ORIP Y SNR": item.docs.doc12,
+                "13. DERECHOS DE PETICION Y RESPUESTAS": item.docs.doc13,
+                "14. SOPORTE DE PAGO BF Y VERIFICACION": item.docs.doc14,
+                "15. COMUNICADO A LA ORIP DEL PAGO": item.docs.doc15,
+                "16. OTROS": item.docs.doc16
             }));
 
             const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -633,7 +613,6 @@
             document.getElementById("registroForm").reset();
             document.getElementById("campoFila").value = "";
             document.getElementById("campoEstado").value = "Pendiente";
-            document.getElementById("boxProgreso").classList.add("hidden");
             existingDocsMap = {};
             docsToDeleteList = [];
             generarChecklistDocs({});
@@ -651,7 +630,6 @@
             document.getElementById("campoBeneficiario").value = registro.beneficiario;
             document.getElementById("campoIdentificacion").value = registro.identificacion;
             document.getElementById("campoEstado").value = registro.estado || "Pendiente";
-            document.getElementById("boxProgreso").classList.add("hidden");
 
             docsToDeleteList = [];
             existingDocsMap = Object.assign({}, registro.docs || {});
@@ -723,115 +701,55 @@
             document.getElementById("modalForm").classList.add("hidden");
         }
 
-        // Petición JSONP auxiliar para recibir respuestas dinámicas de Google Apps Script
-        function enviarPeticionJSONP(action, payload) {
-            return new Promise((resolve, reject) => {
-                const callbackName = 'callback_' + Math.random().toString(36).substring(2, 10);
-                const script = document.createElement('script');
-                const encodedPayload = encodeURIComponent(JSON.stringify(payload));
-
-                window[callbackName] = function(response) {
-                    delete window[callbackName];
-                    script.remove();
-                    resolve(response);
-                };
-
-                script.onerror = function(err) {
-                    delete window[callbackName];
-                    script.remove();
-                    reject(err);
-                };
-
-                script.src = `${POST_API_URL}?action=${action}&callback=${callbackName}&payload=${encodedPayload}`;
-                document.body.appendChild(script);
-            });
-        }
-
         async function guardarRegistro(e) {
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
-            const boxProgreso = document.getElementById("boxProgreso");
-            const barraProgreso = document.getElementById("barraProgreso");
-            const textoProgreso = document.getElementById("textoProgreso");
-            const porcentajeProgreso = document.getElementById("porcentajeProgreso");
-
             btn.disabled = true;
-            boxProgreso.classList.remove("hidden");
+            btn.innerText = "Guardando cambios...";
 
             const filaVal = document.getElementById("campoFila").value;
             const esEdicion = filaVal !== "" && filaVal !== null && filaVal !== undefined;
-            const liquidacionVal = document.getElementById("campoLiquidacion").value;
 
-            const archivosAProcesar = [];
+            const filesPayload = {};
             for (const k of docKeys) {
                 const input = document.getElementById(`file_${k}`);
                 if (input && input.files && input.files.length > 0) {
-                    archivosAProcesar.push({ key: k, file: input.files[0] });
+                    filesPayload[k] = await readFileAsBase64(input.files[0]);
                 }
             }
 
-            const totalArchivos = archivosAProcesar.length;
-            const docsUrlsActualizadas = Object.assign({}, existingDocsMap);
-
-            for (let i = 0; i < totalArchivos; i++) {
-                const item = archivosAProcesar[i];
-                const num = i + 1;
-
-                textoProgreso.innerText = `Subiendo archivo ${num} de ${totalArchivos}: ${item.file.name}...`;
-                const porcentaje = Math.round(((i + 0.5) / (totalArchivos + 1)) * 100);
-                porcentajeProgreso.innerText = `${porcentaje}%`;
-                barraProgreso.style.width = `${porcentaje}%`;
-
-                const fileBase64 = await readFileAsBase64(item.file);
-
-                const singlePayload = {
-                    fileKey: item.key,
-                    liquidacion: liquidacionVal,
-                    fileData: fileBase64
-                };
-
-                try {
-                    const respuesta = await enviarPeticionJSONP('upload_single', singlePayload);
-                    if (respuesta && respuesta.result === 'success' && respuesta.url) {
-                        docsUrlsActualizadas[item.key] = respuesta.url;
-                    }
-                } catch (errSubida) {
-                    console.error("Error al subir archivo individual:", errSubida);
-                }
-            }
-
-            textoProgreso.innerText = "Sincronizando información con la base de datos...";
-            porcentajeProgreso.innerText = "90%";
-            barraProgreso.style.width = "90%";
-
-            const finalPayload = {
+            const payload = {
                 action: esEdicion ? "update" : "create",
                 fila: esEdicion ? parseInt(filaVal, 10) : null,
                 archivo: document.getElementById("campoArchivo").value,
-                liquidacion: liquidacionVal,
+                liquidacion: document.getElementById("campoLiquidacion").value,
                 beneficiario: document.getElementById("campoBeneficiario").value,
                 identificacion: document.getElementById("campoIdentificacion").value,
                 estado: document.getElementById("campoEstado").value,
-                docsUrls: docsUrlsActualizadas,
+                files: filesPayload,
+                existingDocs: existingDocsMap,
                 docsToDelete: docsToDeleteList
             };
 
             try {
-                await enviarPeticionJSONP('save_record', finalPayload);
-
-                porcentajeProgreso.innerText = "100%";
-                barraProgreso.style.width = "100%";
-                textoProgreso.innerText = "¡Proceso finalizado con éxito!";
+                await fetch(POST_API_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
 
                 setTimeout(() => {
                     cerrarModal();
                     cargarDatos();
                     btn.disabled = false;
-                }, 1200);
+                    btn.innerText = "Guardar Cambios";
+                }, 3500);
 
             } catch (err) {
-                alert("Ocurrió un error guardando el registro.");
+                alert("Error de conexión al guardar.");
                 btn.disabled = false;
+                btn.innerText = "Guardar Cambios";
             }
         }
 
