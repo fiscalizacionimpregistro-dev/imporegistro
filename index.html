@@ -240,7 +240,7 @@
                     <div id="contenedorDocs" class="space-y-3"></div>
                 </div>
 
-                <!-- Barra de Progreso -->
+                <!-- BARRA DE PROGRESO -->
                 <div id="boxProgreso" class="hidden p-3 bg-slate-100 rounded-xl space-y-2">
                     <div class="flex justify-between text-xs font-semibold text-slate-700">
                         <span id="textoProgreso">Subiendo archivos...</span>
@@ -723,6 +723,30 @@
             document.getElementById("modalForm").classList.add("hidden");
         }
 
+        // Petición JSONP auxiliar para recibir respuestas dinámicas de Google Apps Script
+        function enviarPeticionJSONP(action, payload) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'callback_' + Math.random().toString(36).substring(2, 10);
+                const script = document.createElement('script');
+                const encodedPayload = encodeURIComponent(JSON.stringify(payload));
+
+                window[callbackName] = function(response) {
+                    delete window[callbackName];
+                    script.remove();
+                    resolve(response);
+                };
+
+                script.onerror = function(err) {
+                    delete window[callbackName];
+                    script.remove();
+                    reject(err);
+                };
+
+                script.src = `${POST_API_URL}?action=${action}&callback=${callbackName}&payload=${encodedPayload}`;
+                document.body.appendChild(script);
+            });
+        }
+
         async function guardarRegistro(e) {
             e.preventDefault();
             const btn = document.getElementById("btnGuardar");
@@ -752,30 +776,27 @@
             for (let i = 0; i < totalArchivos; i++) {
                 const item = archivosAProcesar[i];
                 const num = i + 1;
-                
+
                 textoProgreso.innerText = `Subiendo archivo ${num} de ${totalArchivos}: ${item.file.name}...`;
-                const porcentaje = Math.round((i / (totalArchivos + 1)) * 100);
+                const porcentaje = Math.round(((i + 0.5) / (totalArchivos + 1)) * 100);
                 porcentajeProgreso.innerText = `${porcentaje}%`;
                 barraProgreso.style.width = `${porcentaje}%`;
 
                 const fileBase64 = await readFileAsBase64(item.file);
-                
+
                 const singlePayload = {
-                    type: 'upload_single_file',
-                    liquidacion: liquidacionVal,
                     fileKey: item.key,
+                    liquidacion: liquidacionVal,
                     fileData: fileBase64
                 };
 
                 try {
-                    await fetch(POST_API_URL, {
-                        method: "POST",
-                        mode: "no-cors",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify(singlePayload)
-                    });
-                } catch(errSubida) {
-                    console.error("Error al enviar archivo individual:", errSubida);
+                    const respuesta = await enviarPeticionJSONP('upload_single', singlePayload);
+                    if (respuesta && respuesta.result === 'success' && respuesta.url) {
+                        docsUrlsActualizadas[item.key] = respuesta.url;
+                    }
+                } catch (errSubida) {
+                    console.error("Error al subir archivo individual:", errSubida);
                 }
             }
 
@@ -796,12 +817,7 @@
             };
 
             try {
-                await fetch(POST_API_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify(finalPayload)
-                });
+                await enviarPeticionJSONP('save_record', finalPayload);
 
                 porcentajeProgreso.innerText = "100%";
                 barraProgreso.style.width = "100%";
@@ -811,10 +827,10 @@
                     cerrarModal();
                     cargarDatos();
                     btn.disabled = false;
-                }, 2000);
+                }, 1200);
 
             } catch (err) {
-                alert("Ocurrió un error al guardar.");
+                alert("Ocurrió un error guardando el registro.");
                 btn.disabled = false;
             }
         }
