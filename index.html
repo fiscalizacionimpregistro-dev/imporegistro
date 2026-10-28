@@ -348,6 +348,10 @@
             actualizarDashboard(datosGlobales);
         }
 
+        function esUrlValida(url) {
+            return url && typeof url === 'string' && url.trim().length > 10 && url.trim().indexOf('http') === 0;
+        }
+
         function filtrarPorEstado(estado) {
             estadoFiltroActivo = estado;
             
@@ -380,7 +384,7 @@
                     let docsCount = 0;
                     if (item.docs) {
                         Object.values(item.docs).forEach(url => {
-                            if (url && typeof url === 'string' && url.trim().length > 10 && url.indexOf('http') === 0) docsCount++;
+                            if (esUrlValida(url)) docsCount++;
                         });
                     }
                     coincideEstado = docsCount < 16;
@@ -412,7 +416,7 @@
                 let contadorDocs = 0;
                 if (item.docs) {
                     Object.values(item.docs).forEach(url => {
-                        if (url && typeof url === 'string' && url.trim().length > 10 && url.indexOf('http') === 0) contadorDocs++;
+                        if (esUrlValida(url)) contadorDocs++;
                     });
                 }
 
@@ -568,7 +572,7 @@
                 let docsCount = 0;
                 if (item.docs) {
                     Object.values(item.docs).forEach(url => {
-                        if (url && typeof url === 'string' && url.trim().length > 10 && url.indexOf('http') === 0) docsCount++;
+                        if (esUrlValida(url)) docsCount++;
                     });
                 }
 
@@ -652,7 +656,7 @@
             const container = document.getElementById("contenedorDocs");
             container.innerHTML = docKeys.map(k => {
                 const url = (docs[k] || '').trim();
-                const tieneDoc = url.length > 10 && url.indexOf('http') === 0;
+                const tieneDoc = esUrlValida(url);
 
                 return `
                     <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200/60 transition duration-150 text-xs">
