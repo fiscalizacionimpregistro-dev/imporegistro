@@ -678,7 +678,7 @@
                 const url = (docs[k] || '').trim();
                 const tieneDoc = esUrlValida(url);
 
-                // Contenido específico para el Ítem 1 vs los demás ítems
+                // Paneles específicos según el documento
                 let panelContent = '';
                 if (k === 'doc1') {
                     panelContent = `
@@ -701,7 +701,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Origen Doc</label>
-                                <input type="text" id="origen_doc1" placeholder="Entidad o dependencia origen..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="origen_doc1" placeholder="Entidad o dependencia..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Valor Impuesto ($)</label>
@@ -710,6 +710,118 @@
                             <div class="md:col-span-2">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Valor Total del Pago en el Reporte ($)</label>
                                 <input type="number" step="0.01" id="val_total_doc1" placeholder="0.00" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc3') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade requerimiento ORIP</label>
+                                <input type="text" id="sade_req_orip_doc3" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha requerimiento ORIP</label>
+                                <input type="date" id="fecha_req_orip_doc3" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc4') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">RECIBIDO COMPLETO O NO</label>
+                                <input type="text" id="recibido_completo_doc4" placeholder="Ingrese detalle..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc5') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade requerimiento TESORERIA</label>
+                                <input type="text" id="sade_req_tesoreria_doc5" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha del requerimiento</label>
+                                <input type="date" id="fecha_req_doc5" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc6') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade respuesta TESORERIA</label>
+                                <input type="text" id="sade_resp_tesoreria_doc6" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha respuesta TESORERIA</label>
+                                <input type="date" id="fecha_resp_tesoreria_doc6" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc9') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade invitacion</label>
+                                <input type="text" id="sade_invitacion_doc9" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha invitacion</label>
+                                <input type="date" id="fecha_invitacion_doc9" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">ESTADO DEL ENVIO</label>
+                                <input type="text" id="estado_envio_doc9" placeholder="Estado del envío..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc11') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia Sade</label>
+                                <input type="text" id="denuncia_sade_doc11" placeholder="Ingrese Denuncia Sade..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia fecha</label>
+                                <input type="date" id="denuncia_fecha_doc11" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade a supernotariado</label>
+                                <input type="text" id="sade_supernotariado_doc11" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha a supernotariado</label>
+                                <input type="date" id="fecha_supernotariado_doc11" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc12') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade oficio notificacion</label>
+                                <input type="text" id="sade_oficio_notificacion_doc12" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha oficio notificacion</label>
+                                <input type="date" id="fecha_oficio_notificacion_doc12" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
+                } else if (k === 'doc13') {
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha derecho de peticion</label>
+                                <input type="date" id="fecha_peticion_doc13" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Sade respuesta derecho de peticion</label>
+                                <input type="text" id="sade_respuesta_peticion_doc13" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -732,7 +844,7 @@
                     <div class="bg-slate-50 rounded-xl border border-slate-200/60 overflow-hidden transition duration-150">
                         <div class="flex items-center justify-between p-2.5 hover:bg-slate-100 text-xs">
                             <div class="flex items-center space-x-2 w-1/2">
-                                <button type="button" onclick="toggleDesplegable('${k}')" title="Desplegar campos detallados" class="text-slate-400 hover:text-vinotinto p-1 transition">
+                                <button type="button" onclick="toggleDesplegable('${k}')" title="Desplegar campos" class="text-slate-400 hover:text-vinotinto p-1 transition">
                                     <i id="icon_${k}" class="fa-solid fa-chevron-down text-xs"></i>
                                 </button>
                                 <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i>
@@ -744,14 +856,12 @@
                                     <button type="button" onclick="abrirVisorPdf('${url}', '${docNames[k]}')" title="Ver PDF aquí" class="p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
                                         <i class="fa-solid fa-eye text-xs"></i>
                                     </button>
-                                    
                                     <button type="button" onclick="eliminarDocumento('${k}')" title="Eliminar archivo" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
                                         <i class="fa-solid fa-trash-can text-xs"></i>
                                     </button>
                                 ` : `
                                     <span class="text-slate-400 text-[10px] font-medium mr-1">Pendiente</span>
                                 `}
-                                
                                 <label for="file_${k}" title="Adjuntar archivo PDF" class="cursor-pointer p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm flex items-center justify-center bg-white">
                                     <i class="fa-solid fa-paperclip text-xs"></i>
                                     <input type="file" id="file_${k}" accept="application/pdf" class="hidden" onchange="actualizarNombreAdjunto(this, 'label_${k}')">
