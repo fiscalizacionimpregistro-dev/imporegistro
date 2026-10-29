@@ -7,8 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- SDK Oficial de Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .bg-vinotinto { background-color: #6b1d2f; }
@@ -19,7 +17,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- PANTALLA DE INICIO DE SESIÓN (LOGIN) -->
+    <!-- PANTALLA DE INICIO DE SESIÓN -->
     <div id="pantallaLogin" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center space-y-6">
             <div class="w-16 h-16 bg-vinotinto/10 text-vinotinto rounded-full flex items-center justify-center mx-auto text-3xl">
@@ -31,44 +29,28 @@
                 <p class="text-xs text-slate-500 mt-1">Base de Datos de Impuestos y Registros Documentales</p>
             </div>
 
-            <div class="border-t border-b border-slate-100 py-6 space-y-4">
-                <p class="text-xs text-slate-600">Por favor, inicia sesión con tu cuenta institucional de Google para verificar tus permisos de acceso.</p>
+            <div class="border-t border-b border-slate-100 py-6 space-y-3">
+                <p class="text-xs text-slate-600 mb-4">Inicia sesión para consultar la base de datos de expedientes según tus permisos asignados.</p>
                 
-                <!-- Botón de Inicio de Sesión Oficial de Google -->
-                <div class="flex justify-center">
-                    <div id="g_id_onload"
-                        data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                        data-callback="handleCredentialResponse"
-                        data-auto_prompt="false">
-                    </div>
-                    <div class="g_id_signin"
-                        data-type="standard"
-                        data-size="large"
-                        data-theme="outline"
-                        data-text="sign_in_with"
-                        data-shape="rectangular"
-                        data-logo_alignment="left">
-                    </div>
-                </div>
+                <!-- Botones de ingreso directo según la lista de usuarios en Sheets -->
+                <button onclick="iniciarSesionComo('andybotia@gmail.com', 'Luis Botia', 'Administrador')" class="w-full py-3 px-4 bg-vinotinto hover-bg-vinotinto text-white font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-md">
+                    <i class="fa-solid fa-user-shield text-base"></i>
+                    <span>Ingresar como Luis Botia (Administrador)</span>
+                </button>
 
-                <!-- Botón de Acceso Directo de Prueba para Administrador -->
-                <div class="pt-2">
-                    <button onclick="iniciarSesionDemo('andybotia@gmail.com', 'Luis Botia', 'Administrador')" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-user-shield text-vinotinto"></i>
-                        <span>Ingresar como Luis Botia (Administrador)</span>
-                    </button>
-                </div>
+                <button onclick="iniciarSesionComo('fiscalizacionimpregistro@valledelcauca.gov.co', 'Usuario Institucional', 'Consulta')" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-user text-slate-500"></i>
+                    <span>Ingresar como Usuario Institucional (Consulta)</span>
+                </button>
             </div>
 
-            <p id="msgErrorAuth" class="text-xs text-red-500 font-semibold hidden"></p>
-
             <div class="text-[10px] text-slate-400">
-                Acceso protegido por Control de Roles de Usuario.
+                Sistema protegido por Control de Roles de Usuario.
             </div>
         </div>
     </div>
 
-    <!-- APLICACIÓN PRINCIPAL (OCULTA HASTA INICIAR SESIÓN) -->
+    <!-- APLICACIÓN PRINCIPAL -->
     <div id="appPrincipal" class="hidden min-h-screen flex flex-col justify-between">
         <div>
             <!-- Encabezado Principal -->
@@ -386,26 +368,19 @@
         let registrosPorPagina = 25;
         let estadoFiltroActivo = 'TODOS';
 
-        // Decodificador del JWT Token de Google
-        function parseJwt (token) {
-            var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        }
-
-        // Manejador del inicio de sesión con Google
-        function handleCredentialResponse(response) {
-            const dataUser = parseJwt(response.credential);
-            iniciarSesionDemo(dataUser.email, dataUser.name, 'Administrador');
-        }
-
-        function iniciarSesionDemo(email, nombre, rol) {
+        function iniciarSesionComo(email, nombre, rol) {
             usuarioActual = { email: email, nombre: nombre, rol: rol };
             document.getElementById("pantallaLogin").classList.add("hidden");
             document.getElementById("appPrincipal").classList.remove("hidden");
+            
+            // Ocultar acciones si el usuario es de rol Consulta
+            const btnNuevo = document.getElementById("btnNuevoRegistro");
+            if (rol === "Consulta" && btnNuevo) {
+                btnNuevo.classList.add("hidden");
+            } else if (btnNuevo) {
+                btnNuevo.classList.remove("hidden");
+            }
+
             actualizarPerfilUsuarioUI();
             cargarDatos();
         }
@@ -531,6 +506,8 @@
             const fin = inicio + registrosPorPagina;
             const datosPagina = datosFiltrados.slice(inicio, fin);
 
+            const esConsulta = usuarioActual && usuarioActual.rol === "Consulta";
+
             tbody.innerHTML = datosPagina.map(item => {
                 let contadorDocs = 0;
                 if (item.docs) {
@@ -560,9 +537,15 @@
                         </td>
                         <td class="py-2.5 px-4 text-slate-400 text-[11px]">${item.ultimaModificacion || 'Sin registro'}</td>
                         <td class="py-2.5 px-4 text-center space-x-1">
-                            <button onclick="abrirModalEditar(${item.fila})" title="Editar registro" class="text-slate-500 hover:text-vinotinto p-1.5 rounded-lg hover:bg-slate-100 transition">
-                                <i class="fa-solid fa-pen-to-square text-sm"></i>
-                            </button>
+                            ${esConsulta ? `
+                                <button onclick="abrirModalEditar(${item.fila})" title="Ver detalles" class="text-slate-500 hover:text-vinotinto p-1.5 rounded-lg hover:bg-slate-100 transition">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                            ` : `
+                                <button onclick="abrirModalEditar(${item.fila})" title="Editar registro" class="text-slate-500 hover:text-vinotinto p-1.5 rounded-lg hover:bg-slate-100 transition">
+                                    <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                </button>
+                            `}
                         </td>
                     </tr>
                 `;
@@ -785,6 +768,8 @@
 
         function generarChecklistDocs(docs) {
             const container = document.getElementById("contenedorDocs");
+            const esConsulta = usuarioActual && usuarioActual.rol === "Consulta";
+
             container.innerHTML = docKeys.map(k => {
                 const url = (docs[k] || '').trim();
                 const tieneDoc = esUrlValida(url);
@@ -795,31 +780,31 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Liquidación</label>
-                                <input type="date" id="fecha_liq_doc1" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_liq_doc1" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">No. Matrícula Inmobiliaria</label>
-                                <input type="text" id="mat_doc1" placeholder="Ej: 370-12345" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="mat_doc1" ${esConsulta ? 'disabled' : ''} placeholder="Ej: 370-12345" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nro. Doc. Registro</label>
-                                <input type="text" id="nro_doc_reg_doc1" placeholder="Número de documento..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="nro_doc_reg_doc1" ${esConsulta ? 'disabled' : ''} placeholder="Número de documento..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Documento</label>
-                                <input type="date" id="fecha_doc1" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_doc1" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Origen Doc</label>
-                                <input type="text" id="origen_doc1" placeholder="Entidad o dependencia..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="origen_doc1" ${esConsulta ? 'disabled' : ''} placeholder="Entidad o dependencia..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Valor Impuesto ($)</label>
-                                <input type="number" step="0.01" id="val_impuesto_doc1" placeholder="0.00" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="number" step="0.01" id="val_impuesto_doc1" ${esConsulta ? 'disabled' : ''} placeholder="0.00" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Valor Total del Pago en el Reporte ($)</label>
-                                <input type="number" step="0.01" id="val_total_doc1" placeholder="0.00" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="number" step="0.01" id="val_total_doc1" ${esConsulta ? 'disabled' : ''} placeholder="0.00" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -828,11 +813,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade requerimiento ORIP</label>
-                                <input type="text" id="sade_req_orip_doc3" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="sade_req_orip_doc3" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha requerimiento ORIP</label>
-                                <input type="date" id="fecha_req_orip_doc3" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_req_orip_doc3" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -841,7 +826,7 @@
                         <div class="grid grid-cols-1 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">RECIBIDO COMPLETO O NO</label>
-                                <input type="text" id="recibido_completo_doc4" placeholder="Ingrese detalle..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="recibido_completo_doc4" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese detalle..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -850,11 +835,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade requerimiento TESORERIA</label>
-                                <input type="text" id="sade_req_tesoreria_doc5" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="sade_req_tesoreria_doc5" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha del requerimiento</label>
-                                <input type="date" id="fecha_req_doc5" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_req_doc5" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -863,11 +848,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade respuesta TESORERIA</label>
-                                <input type="text" id="sade_resp_tesoreria_doc6" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="sade_resp_tesoreria_doc6" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha respuesta TESORERIA</label>
-                                <input type="date" id="fecha_resp_tesoreria_doc6" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_resp_tesoreria_doc6" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -876,15 +861,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade invitacion</label>
-                                <input type="text" id="sade_invitacion_doc9" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="sade_invitacion_doc9" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha invitacion</label>
-                                <input type="date" id="fecha_invitacion_doc9" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_invitacion_doc9" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">ESTADO DEL ENVIO</label>
-                                <input type="text" id="estado_envio_doc9" placeholder="Estado del envío..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="estado_envio_doc9" ${esConsulta ? 'disabled' : ''} placeholder="Estado del envío..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -893,27 +878,27 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia Sade</label>
-                                <input type="text" id="denuncia_sade_doc11" placeholder="Ingrese Denuncia Sade..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="denuncia_sade_doc11" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese Denuncia Sade..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia fecha</label>
-                                <input type="date" id="denuncia_fecha_doc11" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="denuncia_fecha_doc11" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade a supernotariado</label>
-                                <input type="text" id="sade_supernotariado_doc11" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="sade_supernotariado_doc11" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha a supernotariado</label>
-                                <input type="date" id="fecha_supernotariado_doc11" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_supernotariado_doc11" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade oficio notificacion</label>
-                                <input type="text" id="sade_oficio_notificacion_doc11" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="sade_oficio_notificacion_doc11" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha oficio notificacion</label>
-                                <input type="date" id="fecha_oficio_notificacion_doc11" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_oficio_notificacion_doc11" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -922,11 +907,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha derecho de peticion</label>
-                                <input type="date" id="fecha_peticion_doc13" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_peticion_doc13" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Sade respuesta derecho de peticion</label>
-                                <input type="text" id="sade_respuesta_peticion_doc13" placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="sade_respuesta_peticion_doc13" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -935,11 +920,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Observaciones / Notas del Documento</label>
-                                <input type="text" id="obs_${k}" placeholder="Agregar nota o número de radicado..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="text" id="obs_${k}" ${esConsulta ? 'disabled' : ''} placeholder="Agregar nota o número de radicado..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha del Documento</label>
-                                <input type="date" id="fecha_${k}" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                                <input type="date" id="fecha_${k}" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
@@ -961,16 +946,20 @@
                                     <button type="button" onclick="abrirVisorPdf('${url}', '${docNames[k]}')" title="Ver PDF aquí" class="p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
                                         <i class="fa-solid fa-eye text-xs"></i>
                                     </button>
+                                    ${!esConsulta ? `
                                     <button type="button" onclick="eliminarDocumento('${k}')" title="Eliminar archivo" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
                                         <i class="fa-solid fa-trash-can text-xs"></i>
                                     </button>
+                                    ` : ''}
                                 ` : `
                                     <span class="text-slate-400 text-[10px] font-medium mr-1">Pendiente</span>
                                 `}
+                                ${!esConsulta ? `
                                 <label for="file_${k}" title="Adjuntar archivo PDF" class="cursor-pointer p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm flex items-center justify-center bg-white">
                                     <i class="fa-solid fa-paperclip text-xs"></i>
                                     <input type="file" id="file_${k}" accept="application/pdf" class="hidden" onchange="actualizarNombreAdjunto(this, 'label_${k}')">
                                 </label>
+                                ` : ''}
                                 <span id="label_${k}" class="text-[10px] text-slate-400 max-w-[70px] truncate hidden"></span>
                             </div>
                         </div>
@@ -1013,6 +1002,11 @@
 
         async function guardarRegistro(e) {
             e.preventDefault();
+            if (usuarioActual && usuarioActual.rol === "Consulta") {
+                alert("Los usuarios con rol 'Consulta' no tienen permisos para guardar cambios.");
+                return;
+            }
+
             const btn = document.getElementById("btnGuardar");
             btn.disabled = true;
 
