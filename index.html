@@ -17,34 +17,111 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- PANTALLA DE INICIO DE SESIÓN -->
-    <div id="pantallaLogin" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center space-y-6">
-            <div class="w-16 h-16 bg-vinotinto/10 text-vinotinto rounded-full flex items-center justify-center mx-auto text-3xl">
-                <i class="fa-solid fa-folder-closed"></i>
-            </div>
+    <!-- PANTALLA DE INICIO DE SESIÓN MODERNA -->
+    <div id="pantallaLogin" class="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-[#3a0d17] flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-white/10">
             
-            <div>
-                <h2 class="text-2xl font-bold text-slate-800">Acceso al Sistema</h2>
-                <p class="text-xs text-slate-500 mt-1">Base de Datos de Impuestos y Registros Documentales</p>
+            <!-- Panel Izquierdo Institucional -->
+            <div class="md:col-span-5 bg-vinotinto text-white p-8 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-white/5 pointer-events-none"></div>
+                <div class="absolute -left-8 -top-8 w-32 h-32 rounded-full bg-white/5 pointer-events-none"></div>
+
+                <div class="relative z-10">
+                    <div class="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl mb-6 border border-white/20">
+                        <i class="fa-solid fa-landmark"></i>
+                    </div>
+                    <span class="text-[10px] uppercase tracking-widest font-bold text-red-200 bg-black/20 px-2.5 py-1 rounded-full">Fiscalización e Impuestos</span>
+                    <h1 class="text-2xl font-bold mt-4 leading-snug">Sistema de Gestión de Liquidaciones</h1>
+                    <p class="text-xs text-red-100/80 mt-3 leading-relaxed">
+                        Control centralizado de expedientes, validación documental automatizada con OCR y seguimiento de estados en tiempo real.
+                    </p>
+                </div>
+
+                <div class="relative z-10 pt-8 border-t border-white/15 mt-8 space-y-2 text-[11px] text-red-100/80">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-300"></i>
+                        <span>Acceso autenticado por correo institucional</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-envelope-circle-check text-emerald-300"></i>
+                        <span>Recuperación automática de credenciales</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="border-t border-b border-slate-100 py-6 space-y-3">
-                <p class="text-xs text-slate-600 mb-4">Inicia sesión para consultar la base de datos de expedientes según tus permisos asignados.</p>
+            <!-- Panel Derecho: Formulario Login / Recuperar -->
+            <div class="md:col-span-7 p-8 sm:p-10 flex flex-col justify-center bg-white">
                 
-                <button onclick="iniciarSesionComo('andybotia@gmail.com', 'Luis Botia', 'Administrador')" class="w-full py-3 px-4 bg-vinotinto hover-bg-vinotinto text-white font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-md">
-                    <i class="fa-solid fa-user-shield text-base"></i>
-                    <span>Ingresar como Luis Botia (Administrador)</span>
-                </button>
+                <!-- VISTA A: FORMULARIO DE INGRESO -->
+                <div id="vistaFormLogin" class="space-y-5">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Iniciar Sesión</h2>
+                        <p class="text-xs text-slate-500 mt-1">Ingresa tu correo registrado y tu contraseña para continuar.</p>
+                    </div>
 
-                <button onclick="iniciarSesionComo('fiscalizacionimpregistro@valledelcauca.gov.co', 'Usuario Institucional', 'Consulta')" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-user text-slate-500"></i>
-                    <span>Ingresar como Usuario Institucional (Consulta)</span>
-                </button>
-            </div>
+                    <div id="alertaLogin" class="hidden p-3 rounded-xl text-xs font-medium flex items-center space-x-2"></div>
 
-            <div class="text-[10px] text-slate-400">
-                Sistema protegido por Control de Roles de Usuario.
+                    <form onsubmit="procesarLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Correo Electrónico</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                                <input type="email" id="loginEmail" required placeholder="usuario@valledelcauca.gov.co" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#6b1d2f]/10 transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="block text-xs font-semibold text-slate-700">Contraseña</label>
+                                <button type="button" onclick="mostrarVistaRecuperar()" class="text-[11px] font-semibold text-vinotinto hover:underline">
+                                    ¿Olvidaste tu contraseña?
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                                <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#6b1d2f]/10 transition">
+                                <button type="button" onclick="togglePasswordVisibility()" title="Mostrar / Ocultar contraseña" class="absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600">
+                                    <i id="iconTogglePass" class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmitLogin" class="w-full py-3 px-4 bg-vinotinto hover-bg-vinotinto text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-[#6b1d2f]/20">
+                            <span>Ingresar al Sistema</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- VISTA B: RECUPERAR CONTRASEÑA POR CORREO -->
+                <div id="vistaFormRecuperar" class="hidden space-y-5">
+                    <div>
+                        <button type="button" onclick="mostrarVistaLogin()" class="text-xs font-semibold text-slate-500 hover:text-vinotinto flex items-center space-x-1 mb-3">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Volver al inicio de sesión</span>
+                        </button>
+                        <h2 class="text-2xl font-bold text-slate-800">Recuperar Contraseña</h2>
+                        <p class="text-xs text-slate-500 mt-1">Escribe tu correo electrónico registrado y te enviaremos tus credenciales de acceso de inmediato.</p>
+                    </div>
+
+                    <div id="alertaRecuperar" class="hidden p-3 rounded-xl text-xs font-medium flex items-center space-x-2"></div>
+
+                    <form onsubmit="procesarRecuperacion(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Correo Electrónico Registrado</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-envelope-open-text absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                                <input type="email" id="recoverEmail" required placeholder="tu.correo@ejemplo.com" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#6b1d2f]/10 transition">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmitRecover" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-lg">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                            <span>Enviar contraseña a mi correo</span>
+                        </button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
@@ -366,32 +443,155 @@
         let registrosPorPagina = 25;
         let estadoFiltroActivo = 'TODOS';
 
-        function iniciarSesionComo(email, nombre, rol) {
-            usuarioActual = { email: email, nombre: nombre, rol: rol };
-            document.getElementById("pantallaLogin").classList.add("hidden");
-            document.getElementById("appPrincipal").classList.remove("hidden");
-            
-            const btnNuevo = document.getElementById("btnNuevoRegistro");
-            if (rol === "Consulta" && btnNuevo) {
-                btnNuevo.classList.add("hidden");
-            } else if (btnNuevo) {
-                btnNuevo.classList.remove("hidden");
+        // -------------------------------------------------------------
+        // LÓGICA DE LOGIN Y RECUPERACIÓN DE CONTRASEÑA
+        // -------------------------------------------------------------
+        function togglePasswordVisibility() {
+            const input = document.getElementById("loginPassword");
+            const icon = document.getElementById("iconTogglePass");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
             }
+        }
 
-            actualizarPerfilUsuarioUI();
-            cargarDatos();
+        function mostrarVistaRecuperar() {
+            document.getElementById("vistaFormLogin").classList.add("hidden");
+            document.getElementById("vistaFormRecuperar").classList.remove("hidden");
+            document.getElementById("alertaRecuperar").classList.add("hidden");
+            const emailLogin = document.getElementById("loginEmail").value;
+            if (emailLogin) document.getElementById("recoverEmail").value = emailLogin;
+        }
+
+        function mostrarVistaLogin() {
+            document.getElementById("vistaFormRecuperar").classList.add("hidden");
+            document.getElementById("vistaFormLogin").classList.remove("hidden");
+            document.getElementById("alertaLogin").classList.add("hidden");
+        }
+
+        function mostrarAlerta(idElemento, mensaje, esExito) {
+            const box = document.getElementById(idElemento);
+            box.classList.remove("hidden", "bg-red-50", "text-red-700", "border-red-200", "bg-emerald-50", "text-emerald-700", "border-emerald-200");
+            if (esExito) {
+                box.classList.add("bg-emerald-50", "text-emerald-700", "border", "border-emerald-200");
+                box.innerHTML = `<i class="fa-solid fa-circle-check text-sm"></i><span>${mensaje}</span>`;
+            } else {
+                box.classList.add("bg-red-50", "text-red-700", "border", "border-red-200");
+                box.innerHTML = `<i class="fa-solid fa-circle-exclamation text-sm"></i><span>${mensaje}</span>`;
+            }
+        }
+
+        function ejecutarJSONP(url, callbackName) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                const timeout = setTimeout(() => {
+                    delete window[callbackName];
+                    script.remove();
+                    reject(new Error("Tiempo de espera agotado"));
+                }, 15000);
+
+                window[callbackName] = function(data) {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    script.remove();
+                    resolve(data);
+                };
+
+                script.onerror = function() {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    script.remove();
+                    reject(new Error("Error de conexión con el servidor"));
+                };
+
+                script.src = url;
+                document.body.appendChild(script);
+            });
+        }
+
+        async function procesarLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+            const btn = document.getElementById("btnSubmitLogin");
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Verificando credenciales...</span>`;
+
+            try {
+                const cbName = "cbLogin_" + Date.now();
+                const url = `${POST_API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&callback=${cbName}&_t=${Date.now()}`;
+                const resp = await ejecutarJSONP(url, cbName);
+
+                if (resp && resp.autorizado && resp.usuario) {
+                    usuarioActual = resp.usuario;
+                    document.getElementById("pantallaLogin").classList.add("hidden");
+                    document.getElementById("appPrincipal").classList.remove("hidden");
+
+                    const btnNuevo = document.getElementById("btnNuevoRegistro");
+                    if (usuarioActual.rol === "Consulta" && btnNuevo) {
+                        btnNuevo.classList.add("hidden");
+                    } else if (btnNuevo) {
+                        btnNuevo.classList.remove("hidden");
+                    }
+
+                    actualizarPerfilUsuarioUI();
+                    cargarDatos();
+                } else {
+                    mostrarAlerta("alertaLogin", (resp && resp.mensaje) ? resp.mensaje : "Credenciales inválidas.", false);
+                }
+            } catch (err) {
+                mostrarAlerta("alertaLogin", "No se pudo conectar con Google Apps Script. Verifica la implementación.", false);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Ingresar al Sistema</span><i class="fa-solid fa-arrow-right text-xs"></i>`;
+            }
+        }
+
+        async function procesarRecuperacion(e) {
+            e.preventDefault();
+            const email = document.getElementById("recoverEmail").value.trim();
+            const btn = document.getElementById("btnSubmitRecover");
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Enviando correo...</span>`;
+
+            try {
+                const cbName = "cbRecover_" + Date.now();
+                const url = `${POST_API_URL}?action=recover&email=${encodeURIComponent(email)}&callback=${cbName}&_t=${Date.now()}`;
+                const resp = await ejecutarJSONP(url, cbName);
+
+                if (resp && resp.enviado) {
+                    mostrarAlerta("alertaRecuperar", resp.mensaje, true);
+                } else {
+                    mostrarAlerta("alertaRecuperar", (resp && resp.mensaje) ? resp.mensaje : "No se pudo enviar el correo.", false);
+                }
+            } catch (err) {
+                mostrarAlerta("alertaRecuperar", "Error de conexión al intentar enviar el correo.", false);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-paper-plane text-xs"></i><span>Enviar contraseña a mi correo</span>`;
+            }
         }
 
         function cerrarSesion() {
             usuarioActual = null;
+            document.getElementById("loginPassword").value = "";
+            document.getElementById("alertaLogin").classList.add("hidden");
             document.getElementById("appPrincipal").classList.add("hidden");
             document.getElementById("pantallaLogin").classList.remove("hidden");
         }
 
+        // -------------------------------------------------------------
+        // CARGA Y RENDERIZADO DE DATOS
+        // -------------------------------------------------------------
         function cargarDatos() {
             const timestamp = new Date().getTime();
             const script = document.createElement('script');
-            script.src = `${POST_API_URL}?callback=procesarDatosGoogle&_t=${timestamp}`;
+            script.src = `${POST_API_URL}?action=getData&callback=procesarDatosGoogle&_t=${timestamp}`;
             
             const scriptsAntiguos = document.querySelectorAll('script[src*="procesarDatosGoogle"]');
             scriptsAntiguos.forEach(s => s.remove());
@@ -749,16 +949,15 @@
             existingDocsMap = Object.assign({}, registro.docs || {});
             generarChecklistDocs(existingDocsMap);
 
-            // Rellenar los 7 campos extraídos de Doc 1 si existen
             if (registro.detallesDoc1) {
-    document.getElementById("fecha_liq_doc1").value = registro.detallesDoc1.fechaLiquidacion || "";
-    document.getElementById("mat_doc1").value = registro.detallesDoc1.matriculaInmobiliaria || "";
-    document.getElementById("nro_doc_reg_doc1").value = registro.detallesDoc1.nroDocRegistro || "";
-    document.getElementById("fecha_doc1").value = registro.detallesDoc1.fechaDocumento || "";
-    document.getElementById("origen_doc1").value = registro.detallesDoc1.origenDoc || "";
-    document.getElementById("val_impuesto_doc1").value = registro.detallesDoc1.valorImpuesto || "";
-    document.getElementById("val_total_doc1").value = registro.detallesDoc1.valorTotalPago || "";
-}
+                document.getElementById("fecha_liq_doc1").value = registro.detallesDoc1.fechaLiquidacion || "";
+                document.getElementById("mat_doc1").value = registro.detallesDoc1.matriculaInmobiliaria || "";
+                document.getElementById("nro_doc_reg_doc1").value = registro.detallesDoc1.nroDocRegistro || "";
+                document.getElementById("fecha_doc1").value = registro.detallesDoc1.fechaDocumento || "";
+                document.getElementById("origen_doc1").value = registro.detallesDoc1.origenDoc || "";
+                document.getElementById("val_impuesto_doc1").value = registro.detallesDoc1.valorImpuesto || "";
+                document.getElementById("val_total_doc1").value = registro.detallesDoc1.valorTotalPago || "";
+            }
 
             document.getElementById("modalForm").classList.remove("hidden");
         }
@@ -973,7 +1172,6 @@
                             </div>
                         </div>
 
-                        <!-- Panel Desplegable -->
                         <div id="panel_${k}" class="hidden p-3 bg-white border-t border-slate-200/80 space-y-2 text-xs">
                             ${panelContent}
                         </div>
