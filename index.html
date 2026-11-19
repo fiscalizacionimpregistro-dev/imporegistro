@@ -3,47 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Liquidaciones y Dashboard Pro</title>
+    <title>Gestión de Liquidaciones - Gobernación del Valle del Cauca</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .bg-vinotinto { background-color: #6b1d2f; }
-        .hover-bg-vinotinto:hover { background-color: #521523; }
-        .text-vinotinto { color: #6b1d2f; }
-        .border-vinotinto { border-color: #6b1d2f; }
+        .bg-vinotinto { background-color: #0b3b70; }
+        .hover-bg-vinotinto:hover { background-color: #082a52; }
+        .text-vinotinto { color: #0b3b70; }
+        .border-vinotinto { border-color: #0b3b70; }
+        .bg-verde-valle { background-color: #008f4c; }
+        .hover-bg-verde-valle:hover { background-color: #00733d; }
+        .login-bg-imagen {
+            background-image: linear-gradient(135deg, rgba(11, 59, 112, 0.82) 0%, rgba(6, 32, 64, 0.88) 100%), url('externa.avif');
+            background-size: cover;
+            background-position: center;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- PANTALLA DE INICIO DE SESIÓN MODERNA -->
-    <div id="pantallaLogin" class="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-[#3a0d17] flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-white/10">
+    <!-- PANTALLA DE INICIO DE SESIÓN INSTITUCIONAL -->
+    <div id="pantallaLogin" class="fixed inset-0 login-bg-imagen flex items-center justify-center p-4 z-50">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-white/30">
             
             <!-- Panel Izquierdo Institucional -->
-            <div class="md:col-span-5 bg-vinotinto text-white p-8 flex flex-col justify-between relative overflow-hidden">
-                <div class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-white/5 pointer-events-none"></div>
-                <div class="absolute -left-8 -top-8 w-32 h-32 rounded-full bg-white/5 pointer-events-none"></div>
+            <div class="md:col-span-5 bg-gradient-to-b from-[#0b3b70] to-[#062447] text-white p-8 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-sky-400/10 pointer-events-none"></div>
+                <div class="absolute -left-8 -top-8 w-32 h-32 rounded-full bg-emerald-400/10 pointer-events-none"></div>
 
                 <div class="relative z-10">
-                    <div class="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl mb-6 border border-white/20">
-                        <i class="fa-solid fa-landmark"></i>
+                    <div class="bg-white rounded-2xl p-3.5 shadow-md mb-6 inline-block w-full">
+                        <img src="gobernacion-logo.png" alt="Gobernación del Valle del Cauca" class="h-14 w-auto mx-auto object-contain">
                     </div>
-                    <span class="text-[10px] uppercase tracking-widest font-bold text-red-200 bg-black/20 px-2.5 py-1 rounded-full">Fiscalización e Impuestos</span>
+                    <span class="text-[10px] uppercase tracking-widest font-bold text-sky-200 bg-white/10 px-3 py-1 rounded-full">Fiscalización e Impuestos</span>
                     <h1 class="text-2xl font-bold mt-4 leading-snug">Sistema de Gestión de Liquidaciones</h1>
-                    <p class="text-xs text-red-100/80 mt-3 leading-relaxed">
-                        Control centralizado de expedientes, validación documental automatizada con OCR y seguimiento de estados en tiempo real.
+                    <p class="text-xs text-sky-100/85 mt-3 leading-relaxed">
+                        Plataforma centralizada de expedientes, validación documental automatizada con OCR y control de estados en tiempo real.
                     </p>
                 </div>
 
-                <div class="relative z-10 pt-8 border-t border-white/15 mt-8 space-y-2 text-[11px] text-red-100/80">
+                <div class="relative z-10 pt-6 border-t border-white/15 mt-8 space-y-2.5 text-[11px] text-sky-100/85">
                     <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-shield-halved text-emerald-300"></i>
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i>
                         <span>Acceso autenticado por correo institucional</span>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-envelope-circle-check text-emerald-300"></i>
+                        <i class="fa-solid fa-envelope-circle-check text-emerald-400"></i>
                         <span>Recuperación automática de credenciales</span>
                     </div>
                 </div>
@@ -55,8 +62,8 @@
                 <!-- VISTA A: FORMULARIO DE INGRESO -->
                 <div id="vistaFormLogin" class="space-y-5">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Iniciar Sesión</h2>
-                        <p class="text-xs text-slate-500 mt-1">Ingresa tu correo registrado y tu contraseña para continuar.</p>
+                        <h2 class="text-2xl font-bold text-slate-800">Bienvenido</h2>
+                        <p class="text-xs text-slate-500 mt-1">Ingresa tu correo registrado y tu contraseña para acceder al sistema.</p>
                     </div>
 
                     <div id="alertaLogin" class="hidden p-3 rounded-xl text-xs font-medium flex items-center space-x-2"></div>
@@ -66,7 +73,7 @@
                             <label class="block text-xs font-semibold text-slate-700 mb-1.5">Correo Electrónico</label>
                             <div class="relative">
                                 <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                                <input type="email" id="loginEmail" required placeholder="usuario@valledelcauca.gov.co" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#6b1d2f]/10 transition">
+                                <input type="email" id="loginEmail" required placeholder="usuario@valledelcauca.gov.co" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#0b3b70]/15 transition">
                             </div>
                         </div>
 
@@ -79,14 +86,14 @@
                             </div>
                             <div class="relative">
                                 <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                                <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#6b1d2f]/10 transition">
+                                <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#0b3b70]/15 transition">
                                 <button type="button" onclick="togglePasswordVisibility()" title="Mostrar / Ocultar contraseña" class="absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600">
                                     <i id="iconTogglePass" class="fa-solid fa-eye text-sm"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button type="submit" id="btnSubmitLogin" class="w-full py-3 px-4 bg-vinotinto hover-bg-vinotinto text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-[#6b1d2f]/20">
+                        <button type="submit" id="btnSubmitLogin" class="w-full py-3 px-4 bg-vinotinto hover-bg-vinotinto text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-[#0b3b70]/25">
                             <span>Ingresar al Sistema</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </button>
@@ -111,11 +118,11 @@
                             <label class="block text-xs font-semibold text-slate-700 mb-1.5">Correo Electrónico Registrado</label>
                             <div class="relative">
                                 <i class="fa-solid fa-envelope-open-text absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                                <input type="email" id="recoverEmail" required placeholder="tu.correo@ejemplo.com" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#6b1d2f]/10 transition">
+                                <input type="email" id="recoverEmail" required placeholder="tu.correo@valledelcauca.gov.co" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-vinotinto focus:ring-2 focus:ring-[#0b3b70]/15 transition">
                             </div>
                         </div>
 
-                        <button type="submit" id="btnSubmitRecover" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-lg">
+                        <button type="submit" id="btnSubmitRecover" class="w-full py-3 px-4 bg-verde-valle hover-bg-verde-valle text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-lg">
                             <i class="fa-solid fa-paper-plane text-xs"></i>
                             <span>Enviar contraseña a mi correo</span>
                         </button>
@@ -130,13 +137,15 @@
     <div id="appPrincipal" class="hidden min-h-screen flex flex-col justify-between">
         <div>
             <!-- Encabezado Principal -->
-            <header class="bg-vinotinto text-white shadow-lg sticky top-0 z-40">
+            <header class="bg-vinotinto text-white shadow-lg sticky top-0 z-40 border-b-2 border-[#008f4c]">
                 <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="flex items-center space-x-3">
-                        <i class="fa-solid fa-folder-open text-2xl"></i>
+                        <div class="bg-white px-2.5 py-1.5 rounded-xl shadow-sm">
+                            <img src="gobernacion-logo.png" alt="Gobernación del Valle" class="h-9 w-auto object-contain">
+                        </div>
                         <div>
-                            <h1 class="text-xl font-bold tracking-wide">Base de Datos de Impuestos y Registros</h1>
-                            <p class="text-[11px] text-red-100 opacity-80">Sistema Integral de Gestión de Expedientes</p>
+                            <h1 class="text-lg font-bold tracking-wide leading-tight">Base de Datos de Impuestos y Registros</h1>
+                            <p class="text-[11px] text-sky-200">Gobernación del Valle del Cauca • Gestión de Expedientes</p>
                         </div>
                     </div>
 
@@ -153,7 +162,7 @@
                     <div class="flex items-center space-x-2">
                         <div id="infoUsuarioHeader"></div>
 
-                        <button onclick="exportarExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-semibold text-xs shadow transition flex items-center space-x-1">
+                        <button onclick="exportarExcel()" class="bg-verde-valle hover-bg-verde-valle text-white px-3 py-2 rounded-lg font-semibold text-xs shadow transition flex items-center space-x-1">
                             <i class="fa-solid fa-file-excel text-sm"></i>
                             <span>Exportar</span>
                         </button>
@@ -173,14 +182,14 @@
                 
                 <!-- VISTA 1: TABLA DE REGISTROS -->
                 <section id="vistaRegistros" class="space-y-4">
-                    <div class="bg-white p-4 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4 justify-between items-center">
+                    <div class="bg-white p-4 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4 justify-between items-center border border-slate-200/70">
                         <div class="relative w-full lg:w-80">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
                             <input type="text" id="inputBuscar" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Buscar archivo, liquidación, beneficiario..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto">
                         </div>
 
                         <div class="flex flex-wrap gap-1.5 w-full lg:w-auto justify-center">
-                            <button onclick="filtrarPorEstado('TODOS')" id="btnFiltroTODOS" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white shadow-sm transition">Todos</button>
+                            <button onclick="filtrarPorEstado('TODOS')" id="btnFiltroTODOS" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-vinotinto text-white shadow-sm transition">Todos</button>
                             <button onclick="filtrarPorEstado('Pendiente')" id="btnFiltroPendiente" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-amber-700 hover:bg-amber-100 transition">Pendientes</button>
                             <button onclick="filtrarPorEstado('En Revisión')" id="btnFiltroEn Revision" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-blue-700 hover:bg-blue-100 transition">En Revisión</button>
                             <button onclick="filtrarPorEstado('Aprobado')" id="btnFiltroAprobado" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-emerald-700 hover:bg-emerald-100 transition">Aprobados</button>
@@ -247,7 +256,7 @@
                                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Expedientes</p>
                                 <h3 id="kpiTotal" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
                             </div>
-                            <div class="w-12 h-12 rounded-full bg-slate-100 text-vinotinto flex items-center justify-center text-xl">
+                            <div class="w-12 h-12 rounded-full bg-sky-50 text-vinotinto flex items-center justify-center text-xl">
                                 <i class="fa-solid fa-folder"></i>
                             </div>
                         </div>
@@ -309,7 +318,7 @@
         </div>
     </div>
 
-    <!-- Modal Formulario -->
+    <!-- Modal Formulario (AMPLIADO) -->
     <div id="modalForm" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center p-2 sm:p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[94vh] overflow-y-auto">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
@@ -322,7 +331,7 @@
             <form id="registroForm" onsubmit="guardarRegistro(event)" class="p-6 space-y-4">
                 <input type="hidden" id="campoFila">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Número de Archivo</label>
                         <input type="text" id="campoArchivo" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
@@ -339,7 +348,7 @@
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Identificación</label>
                         <input type="text" id="campoIdentificacion" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto">
                     </div>
-                    <div class="md:col-span-2">
+                    <div class="md:col-span-4">
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Estado</label>
                         <select id="campoEstado" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-vinotinto bg-white">
                             <option value="Pendiente">Pendiente</option>
@@ -357,7 +366,7 @@
 
                 <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
                     <button type="button" onclick="cerrarModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancelar</button>
-                    <button type="submit" id="btnGuardar" class="px-4 py-2 text-xs font-semibold text-white bg-vinotinto rounded-lg hover-bg-vinotinto">Guardar Cambios</button>
+                    <button type="submit" id="btnGuardar" class="px-5 py-2.5 text-xs font-semibold text-white bg-vinotinto rounded-lg hover-bg-vinotinto shadow-sm">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -365,7 +374,7 @@
 
     <!-- Modal Visor Documentos / Imágenes -->
     <div id="modalPdfViewer" class="fixed inset-0 bg-slate-900 bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full h-[85vh] flex flex-col overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full h-[88vh] flex flex-col overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 id="pdfTituloModal" class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-file-pdf text-red-500"></i> Previsualización de Documento
@@ -627,12 +636,12 @@
             if (userContainer && usuarioActual) {
                 userContainer.innerHTML = `
                     <div class="flex items-center space-x-2 bg-slate-900/30 px-3 py-1.5 rounded-xl border border-white/10 text-xs">
-                        <div class="w-7 h-7 rounded-full bg-vinotinto text-white flex items-center justify-center font-bold text-xs border border-white/20">
+                        <div class="w-7 h-7 rounded-full bg-verde-valle text-white flex items-center justify-center font-bold text-xs border border-white/20">
                             ${usuarioActual.nombre ? usuarioActual.nombre.charAt(0).toUpperCase() : 'U'}
                         </div>
                         <div class="hidden sm:block text-left">
                             <p class="font-semibold text-white leading-none">${usuarioActual.nombre || 'Usuario'}</p>
-                            <p class="text-[10px] text-red-200 opacity-80 mt-0.5">${usuarioActual.rol || 'Consulta'}</p>
+                            <p class="text-[10px] text-sky-200 opacity-90 mt-0.5">${usuarioActual.rol || 'Consulta'}</p>
                         </div>
                     </div>
                 `;
@@ -650,7 +659,7 @@
                 const btn = document.getElementById(`btnFiltro${est}`);
                 if (btn) {
                     if (est === estado) {
-                        btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white shadow-sm transition";
+                        btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-vinotinto text-white shadow-sm transition";
                     } else {
                         btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
                     }
@@ -713,13 +722,13 @@
                     });
                 }
 
-                let badgeColor = "bg-yellow-100 text-yellow-800";
-                if (item.estado === "Aprobado") badgeColor = "bg-green-100 text-green-800";
+                let badgeColor = "bg-amber-100 text-amber-800";
+                if (item.estado === "Aprobado") badgeColor = "bg-emerald-100 text-emerald-800";
                 if (item.estado === "Rechazado") badgeColor = "bg-red-100 text-red-800";
                 if (item.estado === "En Revisión") badgeColor = "bg-blue-100 text-blue-800";
 
                 return `
-                    <tr class="hover:bg-slate-50 transition duration-150">
+                    <tr class="hover:bg-sky-50/40 transition duration-150">
                         <td class="py-2.5 px-4 font-semibold text-slate-700">${item.archivo}</td>
                         <td class="py-2.5 px-4">${item.liquidacion}</td>
                         <td class="py-2.5 px-4">${item.beneficiario}</td>
@@ -895,7 +904,7 @@
                     labels: ['Aprobado', 'Pendiente', 'En Revisión', 'Rechazado'],
                     datasets: [{
                         data: [aprobados, pendientes, enRevision, rechazados],
-                        backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#ef4444']
+                        backgroundColor: ['#008f4c', '#f59e0b', '#0b3b70', '#ef4444']
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
@@ -910,7 +919,7 @@
                     datasets: [{
                         label: 'Número de Expedientes',
                         data: [rango04, rango58, rango915, rango16],
-                        backgroundColor: '#6b1d2f'
+                        backgroundColor: '#0b3b70'
                     }]
                 },
                 options: {
@@ -985,7 +994,7 @@
                 let panelContent = '';
                 if (k === 'doc1') {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Liquidación</label>
                                 <input type="date" id="fecha_liq_doc1" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
@@ -1018,114 +1027,114 @@
                     `;
                 } else if (k === 'doc3') {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade requerimiento ORIP</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Requerimiento ORIP</label>
                                 <input type="text" id="sade_req_orip_doc3" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha requerimiento ORIP</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Requerimiento ORIP</label>
                                 <input type="date" id="fecha_req_orip_doc3" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
                 } else if (k === 'doc4') {
                     panelContent = `
-                        <div class="grid grid-cols-1 gap-2.5">
+                        <div class="grid grid-cols-1 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">RECIBIDO COMPLETO O NO</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Recibido Completo o No</label>
                                 <input type="text" id="recibido_completo_doc4" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese detalle..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
                 } else if (k === 'doc5') {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade requerimiento TESORERIA</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Requerimiento Tesorería</label>
                                 <input type="text" id="sade_req_tesoreria_doc5" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha del requerimiento</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha del Requerimiento</label>
                                 <input type="date" id="fecha_req_doc5" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
                 } else if (k === 'doc6') {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade respuesta TESORERIA</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Respuesta Tesorería</label>
                                 <input type="text" id="sade_resp_tesoreria_doc6" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha respuesta TESORERIA</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Respuesta Tesorería</label>
                                 <input type="date" id="fecha_resp_tesoreria_doc6" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
                 } else if (k === 'doc9') {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade invitacion</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Invitación</label>
                                 <input type="text" id="sade_invitacion_doc9" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha invitacion</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Invitación</label>
                                 <input type="date" id="fecha_invitacion_doc9" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">ESTADO DEL ENVIO</label>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Estado del Envío</label>
                                 <input type="text" id="estado_envio_doc9" ${esConsulta ? 'disabled' : ''} placeholder="Estado del envío..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
                 } else if (k === 'doc11') {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia Sade</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia SADE</label>
                                 <input type="text" id="denuncia_sade_doc11" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese Denuncia Sade..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia fecha</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Denuncia Fecha</label>
                                 <input type="date" id="denuncia_fecha_doc11" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade a supernotariado</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE a Supernotariado</label>
                                 <input type="text" id="sade_supernotariado_doc11" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha a supernotariado</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha a Supernotariado</label>
                                 <input type="date" id="fecha_supernotariado_doc11" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">sade oficio notificacion</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Oficio Notificación</label>
                                 <input type="text" id="sade_oficio_notificacion_doc11" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha oficio notificacion</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Oficio Notificación</label>
                                 <input type="date" id="fecha_oficio_notificacion_doc11" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
                 } else if (k === 'doc13') {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">fecha derecho de peticion</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Derecho de Petición</label>
                                 <input type="date" id="fecha_peticion_doc13" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Sade respuesta derecho de peticion</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Respuesta Derecho de Petición</label>
                                 <input type="text" id="sade_respuesta_peticion_doc13" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
                             </div>
                         </div>
                     `;
                 } else {
                     panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Observaciones / Notas del Documento</label>
                                 <input type="text" id="obs_${k}" ${esConsulta ? 'disabled' : ''} placeholder="Agregar nota o número de radicado..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
@@ -1140,8 +1149,8 @@
 
                 return `
                     <div class="bg-slate-50 rounded-xl border border-slate-200/60 overflow-hidden transition duration-150">
-                        <div class="flex items-center justify-between p-2.5 hover:bg-slate-100 text-xs">
-                            <div class="flex items-center space-x-2 w-1/2">
+                        <div class="flex items-center justify-between p-2.5 hover:bg-sky-50/50 text-xs">
+                            <div class="flex items-center space-x-2 w-2/3">
                                 <button type="button" onclick="toggleDesplegable('${k}')" title="Desplegar campos" class="text-slate-400 hover:text-vinotinto p-1 transition">
                                     <i id="icon_${k}" class="fa-solid fa-chevron-down text-xs"></i>
                                 </button>
@@ -1149,7 +1158,7 @@
                                 <span class="font-medium text-slate-700 truncate">${docNames[k]}</span>
                             </div>
                             
-                            <div class="flex items-center space-x-1.5 w-1/2 justify-end">
+                            <div class="flex items-center space-x-1.5 w-1/3 justify-end">
                                 ${tieneDoc ? `
                                     <button type="button" onclick="abrirVisorPdf('${url}', '${docNames[k]}')" title="Ver archivo" class="p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
                                         <i class="fa-solid fa-eye text-xs"></i>
@@ -1168,11 +1177,11 @@
                                     <input type="file" id="file_${k}" accept="application/pdf,image/png,image/jpeg,image/jpg" class="hidden" onchange="actualizarNombreAdjunto(this, 'label_${k}')">
                                 </label>
                                 ` : ''}
-                                <span id="label_${k}" class="text-[10px] text-slate-400 max-w-[70px] truncate hidden"></span>
+                                <span id="label_${k}" class="text-[10px] text-slate-400 max-w-[120px] truncate hidden"></span>
                             </div>
                         </div>
 
-                        <div id="panel_${k}" class="hidden p-3 bg-white border-t border-slate-200/80 space-y-2 text-xs">
+                        <div id="panel_${k}" class="hidden p-3.5 bg-white border-t border-slate-200/80 space-y-2 text-xs">
                             ${panelContent}
                         </div>
                     </div>
