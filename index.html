@@ -32,7 +32,6 @@
             <div class="border-t border-b border-slate-100 py-6 space-y-3">
                 <p class="text-xs text-slate-600 mb-4">Inicia sesión para consultar la base de datos de expedientes según tus permisos asignados.</p>
                 
-                <!-- Botones de ingreso directo según la lista de usuarios en Sheets -->
                 <button onclick="iniciarSesionComo('andybotia@gmail.com', 'Luis Botia', 'Administrador')" class="w-full py-3 px-4 bg-vinotinto hover-bg-vinotinto text-white font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-md">
                     <i class="fa-solid fa-user-shield text-base"></i>
                     <span>Ingresar como Luis Botia (Administrador)</span>
@@ -75,7 +74,6 @@
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <!-- Banner de Perfil de Usuario -->
                         <div id="infoUsuarioHeader"></div>
 
                         <button onclick="exportarExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-semibold text-xs shadow transition flex items-center space-x-1">
@@ -276,7 +274,7 @@
                 </div>
 
                 <div class="pt-4 border-t border-slate-100">
-                    <h4 class="text-sm font-bold text-slate-700 mb-3">Checklist de Documentos (Archivos PDF)</h4>
+                    <h4 class="text-sm font-bold text-slate-700 mb-3">Checklist de Documentos (PDF o Imagen)</h4>
                     <div id="contenedorDocs" class="space-y-3"></div>
                 </div>
 
@@ -288,7 +286,7 @@
         </div>
     </div>
 
-    <!-- Modal Visor PDF -->
+    <!-- Modal Visor Documentos / Imágenes -->
     <div id="modalPdfViewer" class="fixed inset-0 bg-slate-900 bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full h-[85vh] flex flex-col overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -373,7 +371,6 @@
             document.getElementById("pantallaLogin").classList.add("hidden");
             document.getElementById("appPrincipal").classList.remove("hidden");
             
-            // Ocultar acciones si el usuario es de rol Consulta
             const btnNuevo = document.getElementById("btnNuevoRegistro");
             if (rol === "Consulta" && btnNuevo) {
                 btnNuevo.classList.add("hidden");
@@ -751,6 +748,18 @@
             docsToDeleteList = [];
             existingDocsMap = Object.assign({}, registro.docs || {});
             generarChecklistDocs(existingDocsMap);
+
+            // Rellenar los 7 campos extraídos de Doc 1 si existen
+            if (registro.detallesDoc1) {
+                document.getElementById("fecha_liq_doc1").value = registro.detallesDoc1.fechaLiquidacion || "";
+                document.getElementById("mat_doc1").value = registro.detallesDoc1.matriculaInmobiliaria || "";
+                document.getElementById("nro_doc_reg_doc1").value = registro.detallesDoc1.nroDocRegistro || "";
+                document.getElementById("fecha_doc1").value = registro.detallesDoc1.fechaDocumento || "";
+                document.getElementById("origen_doc1").value = registro.detallesDoc1.origenDoc || "";
+                document.getElementById("val_impuesto_doc1").value = registro.detallesDoc1.valorImpuesto || "";
+                document.getElementById("val_total_doc1").value = registro.detallesDoc1.valorTotalPago || "";
+            }
+
             document.getElementById("modalForm").classList.remove("hidden");
         }
 
@@ -937,13 +946,13 @@
                                 <button type="button" onclick="toggleDesplegable('${k}')" title="Desplegar campos" class="text-slate-400 hover:text-vinotinto p-1 transition">
                                     <i id="icon_${k}" class="fa-solid fa-chevron-down text-xs"></i>
                                 </button>
-                                <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i>
+                                <i class="fa-solid fa-file-lines text-vinotinto text-sm"></i>
                                 <span class="font-medium text-slate-700 truncate">${docNames[k]}</span>
                             </div>
                             
                             <div class="flex items-center space-x-1.5 w-1/2 justify-end">
                                 ${tieneDoc ? `
-                                    <button type="button" onclick="abrirVisorPdf('${url}', '${docNames[k]}')" title="Ver PDF aquí" class="p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
+                                    <button type="button" onclick="abrirVisorPdf('${url}', '${docNames[k]}')" title="Ver archivo" class="p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm">
                                         <i class="fa-solid fa-eye text-xs"></i>
                                     </button>
                                     ${!esConsulta ? `
@@ -955,9 +964,9 @@
                                     <span class="text-slate-400 text-[10px] font-medium mr-1">Pendiente</span>
                                 `}
                                 ${!esConsulta ? `
-                                <label for="file_${k}" title="Adjuntar archivo PDF" class="cursor-pointer p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm flex items-center justify-center bg-white">
+                                <label for="file_${k}" title="Adjuntar PDF o Imagen" class="cursor-pointer p-1.5 text-slate-600 hover:text-vinotinto hover:bg-white rounded-lg border border-slate-200 transition shadow-sm flex items-center justify-center bg-white">
                                     <i class="fa-solid fa-paperclip text-xs"></i>
-                                    <input type="file" id="file_${k}" accept="application/pdf" class="hidden" onchange="actualizarNombreAdjunto(this, 'label_${k}')">
+                                    <input type="file" id="file_${k}" accept="application/pdf,image/png,image/jpeg,image/jpg" class="hidden" onchange="actualizarNombreAdjunto(this, 'label_${k}')">
                                 </label>
                                 ` : ''}
                                 <span id="label_${k}" class="text-[10px] text-slate-400 max-w-[70px] truncate hidden"></span>
@@ -1034,7 +1043,7 @@
             }
 
             loadingBar.style.width = "50%";
-            loadingText.innerText = countFiles > 0 ? `Subiendo ${countFiles} documento(s) a Google Drive...` : "Sincronizando registro...";
+            loadingText.innerText = countFiles > 0 ? `Subiendo ${countFiles} documento(s) y aplicando OCR...` : "Sincronizando registro...";
 
             const payload = {
                 action: esEdicion ? "update" : "create",
@@ -1046,7 +1055,16 @@
                 estado: document.getElementById("campoEstado").value,
                 files: filesPayload,
                 existingDocs: existingDocsMap,
-                docsToDelete: docsToDeleteList
+                docsToDelete: docsToDeleteList,
+                detallesDoc1: {
+                    fechaLiquidacion: document.getElementById("fecha_liq_doc1") ? document.getElementById("fecha_liq_doc1").value : "",
+                    matriculaInmobiliaria: document.getElementById("mat_doc1") ? document.getElementById("mat_doc1").value : "",
+                    nroDocRegistro: document.getElementById("nro_doc_reg_doc1") ? document.getElementById("nro_doc_reg_doc1").value : "",
+                    fechaDocumento: document.getElementById("fecha_doc1") ? document.getElementById("fecha_doc1").value : "",
+                    origenDoc: document.getElementById("origen_doc1") ? document.getElementById("origen_doc1").value : "",
+                    valorImpuesto: document.getElementById("val_impuesto_doc1") ? document.getElementById("val_impuesto_doc1").value : "",
+                    valorTotalPago: document.getElementById("val_total_doc1") ? document.getElementById("val_total_doc1").value : ""
+                }
             };
 
             try {
