@@ -751,14 +751,14 @@
 
             // Rellenar los 7 campos extraídos de Doc 1 si existen
             if (registro.detallesDoc1) {
-                document.getElementById("fecha_liq_doc1").value = registro.detallesDoc1.fechaLiquidacion || "";
-                document.getElementById("mat_doc1").value = registro.detallesDoc1.matriculaInmobiliaria || "";
-                document.getElementById("nro_doc_reg_doc1").value = registro.detallesDoc1.nroDocRegistro || "";
-                document.getElementById("fecha_doc1").value = registro.detallesDoc1.fechaDocumento || "";
-                document.getElementById("origen_doc1").value = registro.detallesDoc1.origenDoc || "";
-                document.getElementById("val_impuesto_doc1").value = registro.detallesDoc1.valorImpuesto || "";
-                document.getElementById("val_total_doc1").value = registro.detallesDoc1.valorTotalPago || "";
-            }
+    document.getElementById("fecha_liq_doc1").value = registro.detallesDoc1.fechaLiquidacion || "";
+    document.getElementById("mat_doc1").value = registro.detallesDoc1.matriculaInmobiliaria || "";
+    document.getElementById("nro_doc_reg_doc1").value = registro.detallesDoc1.nroDocRegistro || "";
+    document.getElementById("fecha_doc1").value = registro.detallesDoc1.fechaDocumento || "";
+    document.getElementById("origen_doc1").value = registro.detallesDoc1.origenDoc || "";
+    document.getElementById("val_impuesto_doc1").value = registro.detallesDoc1.valorImpuesto || "";
+    document.getElementById("val_total_doc1").value = registro.detallesDoc1.valorTotalPago || "";
+}
 
             document.getElementById("modalForm").classList.remove("hidden");
         }
