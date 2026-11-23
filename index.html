@@ -204,16 +204,42 @@
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
-                                <thead>
+                               <thead>
                                     <tr class="bg-slate-100 text-slate-600 uppercase text-xs font-semibold tracking-wider border-b border-slate-200">
-                                        <th class="py-3 px-4">N° Archivo</th>
-                                        <th class="py-3 px-4">Liquidación</th>
-                                        <th class="py-3 px-4">Beneficiario</th>
-                                        <th class="py-3 px-4">Identificación</th>
-                                        <th class="py-3 px-4">Estado</th>
-                                        <th class="py-3 px-4 text-center">Docs</th>
-                                        <th class="py-3 px-4">Última Modificación</th>
-                                        <th class="py-3 px-4 text-center">Acciones</th>
+                                        <th class="py-2.5 px-3">
+                                            <div>N° Archivo</div>
+                                            <input type="text" id="filtroColArchivo" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Filtrar..." class="mt-1.5 w-full px-2 py-1 text-[11px] font-normal normal-case text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:border-vinotinto">
+                                        </th>
+                                        <th class="py-2.5 px-3">
+                                            <div>Liquidación</div>
+                                            <input type="text" id="filtroColLiquidacion" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Filtrar..." class="mt-1.5 w-full px-2 py-1 text-[11px] font-normal normal-case text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:border-vinotinto">
+                                        </th>
+                                        <th class="py-2.5 px-3">
+                                            <div>Beneficiario</div>
+                                            <input type="text" id="filtroColBeneficiario" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Filtrar..." class="mt-1.5 w-full px-2 py-1 text-[11px] font-normal normal-case text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:border-vinotinto">
+                                        </th>
+                                        <th class="py-2.5 px-3">
+                                            <div>Identificación</div>
+                                            <input type="text" id="filtroColIdentificacion" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Filtrar..." class="mt-1.5 w-full px-2 py-1 text-[11px] font-normal normal-case text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:border-vinotinto">
+                                        </th>
+                                        <th class="py-2.5 px-3">
+                                            <div>Estado</div>
+                                            <input type="text" id="filtroColEstado" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Filtrar..." class="mt-1.5 w-full px-2 py-1 text-[11px] font-normal normal-case text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:border-vinotinto">
+                                        </th>
+                                        <th class="py-2.5 px-3 text-center">
+                                            <div>Docs</div>
+                                            <input type="text" id="filtroColDocs" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Ej: 0/16" class="mt-1.5 w-20 mx-auto block text-center px-2 py-1 text-[11px] font-normal normal-case text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:border-vinotinto">
+                                        </th>
+                                        <th class="py-2.5 px-3">
+                                            <div>Última Modificación</div>
+                                            <input type="text" id="filtroColModificacion" onkeyup="aplicarFiltrosYRenderizar()" placeholder="Filtrar..." class="mt-1.5 w-full px-2 py-1 text-[11px] font-normal normal-case text-slate-700 bg-white border border-slate-200 rounded focus:outline-none focus:border-vinotinto">
+                                        </th>
+                                        <th class="py-2.5 px-3 text-center align-top">
+                                            <div>Acciones</div>
+                                            <button type="button" onclick="limpiarTodosFiltros()" title="Limpiar todos los filtros" class="mt-1.5 px-2 py-1 text-[10px] font-normal normal-case text-slate-500 hover:text-vinotinto bg-white border border-slate-200 rounded hover:bg-slate-50 transition">
+                                                <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+                                            </button>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaCuerpo" class="divide-y divide-slate-100 text-xs">
