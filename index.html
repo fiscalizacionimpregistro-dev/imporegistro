@@ -709,6 +709,61 @@
         }
 
         function aplicarFiltrosYRenderizar() {
+            const query = (document.getElementById("inputBuscar").value || "").toLowerCase().trim();
+            const fArchivo = (document.getElementById("filtroColArchivo")?.value || "").toLowerCase().trim();
+            const fLiquidacion = (document.getElementById("filtroColLiquidacion")?.value || "").toLowerCase().trim();
+            const fBeneficiario = (document.getElementById("filtroColBeneficiario")?.value || "").toLowerCase().trim();
+            const fIdentificacion = (document.getElementById("filtroColIdentificacion")?.value || "").toLowerCase().trim();
+            const fEstado = (document.getElementById("filtroColEstado")?.value || "").toLowerCase().trim();
+            const fDocs = (document.getElementById("filtroColDocs")?.value || "").toLowerCase().trim();
+            const fModificacion = (document.getElementById("filtroColModificacion")?.value || "").toLowerCase().trim();
+
+            datosFiltrados = datosGlobales.filter(item => {
+                const archivoStr = String(item.archivo || "").toLowerCase();
+                const liquidacionStr = String(item.liquidacion || "").toLowerCase();
+                const beneficiarioStr = String(item.beneficiario || "").toLowerCase();
+                const identificacionStr = String(item.identificacion || "").toLowerCase();
+                const estadoStr = String(item.estado || "").toLowerCase();
+                const modificacionStr = String(item.ultimaModificacion || "Sin registro").toLowerCase();
+
+                let docsCount = 0;
+                if (item.docs) {
+                    Object.values(item.docs).forEach(url => {
+                        if (esUrlValida(url)) docsCount++;
+                    });
+                }
+                const docsStr = `${docsCount}/16`;
+
+                const coincideTextoGlobal = !query ||
+                    archivoStr.includes(query) ||
+                    liquidacionStr.includes(query) ||
+                    beneficiarioStr.includes(query) ||
+                    identificacionStr.includes(query);
+
+                const coincideColumnas =
+                    (!fArchivo || archivoStr.includes(fArchivo)) &&
+                    (!fLiquidacion || liquidacionStr.includes(fLiquidacion)) &&
+                    (!fBeneficiario || beneficiarioStr.includes(fBeneficiario)) &&
+                    (!fIdentificacion || identificacionStr.includes(fIdentificacion)) &&
+                    (!fEstado || estadoStr.includes(fEstado)) &&
+                    (!fDocs || docsStr.includes(fDocs)) &&
+                    (!fModificacion || modificacionStr.includes(fModificacion));
+
+                let coincideEstado = true;
+                if (estadoFiltroActivo === 'INCOMPLETOS') {
+                    coincideEstado = docsCount < 16;
+                } else if (estadoFiltroActivo !== 'TODOS') {
+                    coincideEstado = item.estado === estadoFiltroActivo;
+                }
+
+                return coincideTextoGlobal && coincideColumnas && coincideEstado;
+            });
+
+            paginaActual = 1;
+            renderizarTabla();
+        }
+
+        function aplicarFiltrosYRenderizar() {
             const query = document.getElementById("inputBuscar").value.toLowerCase();
             
             datosFiltrados = datosGlobales.filter(item => {
