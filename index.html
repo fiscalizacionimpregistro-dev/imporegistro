@@ -1050,7 +1050,7 @@
             existingDocsMap = Object.assign({}, registro.docs || {});
             generarChecklistDocs(existingDocsMap);
 
-            if (registro.detallesDoc1) {
+           if (registro.detallesDoc1) {
                 document.getElementById("fecha_liq_doc1").value = registro.detallesDoc1.fechaLiquidacion || "";
                 document.getElementById("mat_doc1").value = registro.detallesDoc1.matriculaInmobiliaria || "";
                 document.getElementById("nro_doc_reg_doc1").value = registro.detallesDoc1.nroDocRegistro || "";
@@ -1060,9 +1060,13 @@
                 document.getElementById("val_total_doc1").value = registro.detallesDoc1.valorTotalPago || "";
             }
 
+            if (registro.detallesDoc2) {
+                document.getElementById("estado_lista_doc2").value = registro.detallesDoc2.estadoLista || "Lista ( )";
+                document.getElementById("fecha_folio_doc2").value = registro.detallesDoc2.fechaFolio || "";
+            }
+
             document.getElementById("modalForm").classList.remove("hidden");
         }
-
         function toggleDesplegable(key) {
             const panel = document.getElementById(`panel_${key}`);
             const icono = document.getElementById(`icon_${key}`);
