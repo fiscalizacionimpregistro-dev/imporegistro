@@ -1365,24 +1365,28 @@
             loadingText.innerText = countFiles > 0 ? `Subiendo ${countFiles} documento(s) y aplicando OCR...` : "Sincronizando registro...";
 
             const payload = {
-                action: esEdicion ? "update" : "create",
+                action: esEdicion ? 'update' : 'create',
                 fila: esEdicion ? parseInt(filaVal, 10) : null,
-                archivo: document.getElementById("campoArchivo").value,
-                liquidacion: document.getElementById("campoLiquidacion").value,
-                beneficiario: document.getElementById("campoBeneficiario").value,
-                identificacion: document.getElementById("campoIdentificacion").value,
+                archivo: document.getElementById("campoArchivo").value.trim(),
+                liquidacion: document.getElementById("campoLiquidacion").value.trim(),
+                beneficiario: document.getElementById("campoBeneficiario").value.trim(),
+                identificacion: document.getElementById("campoIdentificacion").value.trim(),
                 estado: document.getElementById("campoEstado").value,
-                files: filesPayload,
                 existingDocs: existingDocsMap,
                 docsToDelete: docsToDeleteList,
+                files: filesPayload,
                 detallesDoc1: {
-                    fechaLiquidacion: document.getElementById("fecha_liq_doc1") ? document.getElementById("fecha_liq_doc1").value : "",
-                    matriculaInmobiliaria: document.getElementById("mat_doc1") ? document.getElementById("mat_doc1").value : "",
-                    nroDocRegistro: document.getElementById("nro_doc_reg_doc1") ? document.getElementById("nro_doc_reg_doc1").value : "",
-                    fechaDocumento: document.getElementById("fecha_doc1") ? document.getElementById("fecha_doc1").value : "",
-                    origenDoc: document.getElementById("origen_doc1") ? document.getElementById("origen_doc1").value : "",
-                    valorImpuesto: document.getElementById("val_impuesto_doc1") ? document.getElementById("val_impuesto_doc1").value : "",
-                    valorTotalPago: document.getElementById("val_total_doc1") ? document.getElementById("val_total_doc1").value : ""
+                    fechaLiquidacion: document.getElementById("fecha_liq_doc1")?.value || "",
+                    matriculaInmobiliaria: document.getElementById("mat_doc1")?.value || "",
+                    nroDocRegistro: document.getElementById("nro_doc_reg_doc1")?.value || "",
+                    fechaDocumento: document.getElementById("fecha_doc1")?.value || "",
+                    origenDoc: document.getElementById("origen_doc1")?.value || "",
+                    valorImpuesto: document.getElementById("val_impuesto_doc1")?.value || "",
+                    valorTotalPago: document.getElementById("val_total_doc1")?.value || ""
+                },
+                detallesDoc2: {
+                    estadoLista: document.getElementById("estado_lista_doc2") ? document.getElementById("estado_lista_doc2").value : "Lista ( )",
+                    fechaFolio: document.getElementById("fecha_folio_doc2") ? document.getElementById("fecha_folio_doc2").value : ""
                 }
             };
 
