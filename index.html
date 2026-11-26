@@ -1064,7 +1064,12 @@
                 document.getElementById("estado_lista_doc2").value = registro.detallesDoc2.estadoLista || "Lista ( )";
                 document.getElementById("fecha_folio_doc2").value = registro.detallesDoc2.fechaFolio || "";
             }
-
+if (registro && registro.detallesDoc3) {
+    const inpSade3 = document.getElementById("sade_req_orip_doc3");
+    const inpFecha3 = document.getElementById("fecha_req_orip_doc3");
+    if (inpSade3) inpSade3.value = registro.detallesDoc3.sadeRequerimiento || "";
+    if (inpFecha3) inpFecha3.value = registro.detallesDoc3.fechaRequerimiento || "";
+}
             if (registro.detallesDoc3) {
   const inpSade3 = document.getElementById("sade_req_doc3");
   const inpFecha3 = document.getElementById("fecha_req_doc3");
