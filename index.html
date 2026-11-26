@@ -1328,7 +1328,7 @@
             document.getElementById("modalForm").classList.add("hidden");
         }
 
-        async function guardarRegistro(e) {
+       async function guardarRegistro(e) {
             e.preventDefault();
             if (usuarioActual && usuarioActual.rol === "Consulta") {
                 alert("Los usuarios con rol 'Consulta' no tienen permisos para guardar cambios.");
@@ -1364,6 +1364,12 @@
             loadingBar.style.width = "50%";
             loadingText.innerText = countFiles > 0 ? `Subiendo ${countFiles} documento(s) y aplicando OCR...` : "Sincronizando registro...";
 
+            const extrasDocsPayload = {};
+            for (let i = 3; i <= 16; i++) {
+                const el = document.getElementById(`extra_doc${i}`);
+                extrasDocsPayload[`doc${i}`] = el ? el.value.trim() : "";
+            }
+
             const payload = {
                 action: esEdicion ? 'update' : 'create',
                 fila: esEdicion ? parseInt(filaVal, 10) : null,
@@ -1387,7 +1393,8 @@
                 detallesDoc2: {
                     estadoLista: document.getElementById("estado_lista_doc2") ? document.getElementById("estado_lista_doc2").value : "Lista ( )",
                     fechaFolio: document.getElementById("fecha_folio_doc2") ? document.getElementById("fecha_folio_doc2").value : ""
-                }
+                },
+                extrasDocs: extrasDocsPayload
             };
 
             try {
@@ -1407,11 +1414,11 @@
                     modalLoading.classList.add("hidden");
                     modalLoading.classList.remove("flex");
                     loadingBar.style.width = "0%";
-                    
+
                     cerrarModal();
                     cargarDatos();
                     btn.disabled = false;
-                }, 2000);
+                }, 2500);
 
             } catch (err) {
                 modalLoading.classList.add("hidden");
