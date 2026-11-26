@@ -1144,18 +1144,26 @@
                         </div>
                     `;
                 } else if (k === 'doc3') {
-                    panelContent = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Requerimiento ORIP</label>
-                                <input type="text" id="sade_req_orip_doc3" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Requerimiento ORIP</label>
-                                <input type="date" id="fecha_req_orip_doc3" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-                            </div>
-                        </div>
-                    `;
+    const sadeDoc3Val = (registro && registro.detallesDoc3 && registro.detallesDoc3.sadeRequerimiento)
+        ? String(registro.detallesDoc3.sadeRequerimiento).replace(/"/g, '&quot;')
+        : '';
+    const fechaDoc3Val = (registro && registro.detallesDoc3 && registro.detallesDoc3.fechaRequerimiento)
+        ? String(registro.detallesDoc3.fechaRequerimiento)
+        : '';
+
+    panelContent = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Requerimiento ORIP</label>
+                <input type="text" id="sade_req_orip_doc3" value="${sadeDoc3Val}" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+            </div>
+            <div>
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Requerimiento ORIP</label>
+                <input type="date" id="fecha_req_orip_doc3" value="${fechaDoc3Val}" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+            </div>
+        </div>
+    `;
+}
                 } else if (k === 'doc4') {
                     panelContent = `
                         <div class="grid grid-cols-1 gap-3">
