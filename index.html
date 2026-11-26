@@ -707,9 +707,8 @@
             document.getElementById("filtroColModificacion").value = "";
             filtrarPorEstado('TODOS');
         }
-
-        function aplicarFiltrosYRenderizar() {
-            const query = (document.getElementById("inputBuscar").value || "").toLowerCase().trim();
+function aplicarFiltrosYRenderizar() {
+            const query = (document.getElementById("inputBuscar")?.value || "").toLowerCase().trim();
             const fArchivo = (document.getElementById("filtroColArchivo")?.value || "").toLowerCase().trim();
             const fLiquidacion = (document.getElementById("filtroColLiquidacion")?.value || "").toLowerCase().trim();
             const fBeneficiario = (document.getElementById("filtroColBeneficiario")?.value || "").toLowerCase().trim();
@@ -738,7 +737,8 @@
                     archivoStr.includes(query) ||
                     liquidacionStr.includes(query) ||
                     beneficiarioStr.includes(query) ||
-                    identificacionStr.includes(query);
+                    identificacionStr.includes(query) ||
+                    estadoStr.includes(query);
 
                 const coincideColumnas =
                     (!fArchivo || archivoStr.includes(fArchivo)) &&
@@ -746,14 +746,14 @@
                     (!fBeneficiario || beneficiarioStr.includes(fBeneficiario)) &&
                     (!fIdentificacion || identificacionStr.includes(fIdentificacion)) &&
                     (!fEstado || estadoStr.includes(fEstado)) &&
-                    (!fDocs || docsStr.includes(fDocs)) &&
+                    (!fDocs || docsStr.includes(fDocs) || String(docsCount) === fDocs) &&
                     (!fModificacion || modificacionStr.includes(fModificacion));
 
                 let coincideEstado = true;
                 if (estadoFiltroActivo === 'INCOMPLETOS') {
                     coincideEstado = docsCount < 16;
-                } else if (estadoFiltroActivo !== 'TODOS') {
-                    coincideEstado = item.estado === estadoFiltroActivo;
+                } else if (estadoFiltroActivo && estadoFiltroActivo !== 'TODOS') {
+                    coincideEstado = String(item.estado || "").trim().toLowerCase() === String(estadoFiltroActivo).trim().toLowerCase();
                 }
 
                 return coincideTextoGlobal && coincideColumnas && coincideEstado;
@@ -763,33 +763,7 @@
             renderizarTabla();
         }
 
-        function aplicarFiltrosYRenderizar() {
-            const query = document.getElementById("inputBuscar").value.toLowerCase();
-            
-            datosFiltrados = datosGlobales.filter(item => {
-                const coincideTexto = item.archivo.toLowerCase().includes(query) ||
-                                     item.liquidacion.toLowerCase().includes(query) ||
-                                     item.beneficiario.toLowerCase().includes(query) ||
-                                     item.identificacion.toLowerCase().includes(query);
-
-                let coincideEstado = true;
-                if (estadoFiltroActivo === 'INCOMPLETOS') {
-                    let docsCount = 0;
-                    if (item.docs) {
-                        Object.values(item.docs).forEach(url => {
-                            if (esUrlValida(url)) docsCount++;
-                        });
-                    }
-                    coincideEstado = docsCount < 16;
-                } else if (estadoFiltroActivo !== 'TODOS') {
-                    coincideEstado = item.estado === estadoFiltroActivo;
-                }
-
-                return coincideTexto && coincideEstado;
-            });
-
-            renderizarTabla();
-        }
+        
         function renderizarTabla() {
             const tbody = document.getElementById("tablaCuerpo");
             document.getElementById("cantRegistros").innerText = datosFiltrados.length;
