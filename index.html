@@ -1065,6 +1065,12 @@
                 document.getElementById("fecha_folio_doc2").value = registro.detallesDoc2.fechaFolio || "";
             }
 
+            if (registro.detallesDoc3) {
+  const inpSade3 = document.getElementById("sade_req_doc3");
+  const inpFecha3 = document.getElementById("fecha_req_doc3");
+  if (inpSade3) inpSade3.value = registro.detallesDoc3.sadeRequerimiento || "";
+  if (inpFecha3) inpFecha3.value = registro.detallesDoc3.fechaRequerimiento || "";
+}
             document.getElementById("modalForm").classList.remove("hidden");
         }
         function toggleDesplegable(key) {
@@ -1394,6 +1400,10 @@
                     estadoLista: document.getElementById("estado_lista_doc2") ? document.getElementById("estado_lista_doc2").value : "Lista ( )",
                     fechaFolio: document.getElementById("fecha_folio_doc2") ? document.getElementById("fecha_folio_doc2").value : ""
                 },
+                detallesDoc3: {
+  sadeRequerimiento: document.getElementById("sade_req_doc3") ? document.getElementById("sade_req_doc3").value.trim() : "",
+  fechaRequerimiento: document.getElementById("fecha_req_doc3") ? document.getElementById("fecha_req_doc3").value : ""
+},
                 extrasDocs: extrasDocsPayload
             };
 
