@@ -999,7 +999,7 @@
                         backgroundColor: ['#008f4c', '#f59e0b', '#0b3b70', '#ef4444']
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+options: { responsive: true, maintainAspectRatio: false }
             });
 
             const ctxChecklist = document.getElementById("chartChecklist").getContext("2d");
@@ -1048,9 +1048,9 @@
 
             docsToDeleteList = [];
             existingDocsMap = Object.assign({}, registro.docs || {});
-            generarChecklistDocs(existingDocsMap);
+            generarChecklistDocs(existingDocsMap, registro);
 
-           if (registro.detallesDoc1) {
+            if (registro.detallesDoc1) {
                 document.getElementById("fecha_liq_doc1").value = registro.detallesDoc1.fechaLiquidacion || "";
                 document.getElementById("mat_doc1").value = registro.detallesDoc1.matriculaInmobiliaria || "";
                 document.getElementById("nro_doc_reg_doc1").value = registro.detallesDoc1.nroDocRegistro || "";
@@ -1064,20 +1064,17 @@
                 document.getElementById("estado_lista_doc2").value = registro.detallesDoc2.estadoLista || "Lista ( )";
                 document.getElementById("fecha_folio_doc2").value = registro.detallesDoc2.fechaFolio || "";
             }
-if (registro && registro.detallesDoc3) {
-    const inpSade3 = document.getElementById("sade_req_orip_doc3");
-    const inpFecha3 = document.getElementById("fecha_req_orip_doc3");
-    if (inpSade3) inpSade3.value = registro.detallesDoc3.sadeRequerimiento || "";
-    if (inpFecha3) inpFecha3.value = registro.detallesDoc3.fechaRequerimiento || "";
-}
+
             if (registro.detallesDoc3) {
-  const inpSade3 = document.getElementById("sade_req_doc3");
-  const inpFecha3 = document.getElementById("fecha_req_doc3");
-  if (inpSade3) inpSade3.value = registro.detallesDoc3.sadeRequerimiento || "";
-  if (inpFecha3) inpFecha3.value = registro.detallesDoc3.fechaRequerimiento || "";
-}
+                const inpSade3 = document.getElementById("sade_req_orip_doc3");
+                const inpFecha3 = document.getElementById("fecha_req_orip_doc3");
+                if (inpSade3) inpSade3.value = registro.detallesDoc3.sadeRequerimiento || "";
+                if (inpFecha3) inpFecha3.value = registro.detallesDoc3.fechaRequerimiento || "";
+            }
+
             document.getElementById("modalForm").classList.remove("hidden");
         }
+
         function toggleDesplegable(key) {
             const panel = document.getElementById(`panel_${key}`);
             const icono = document.getElementById(`icon_${key}`);
@@ -1090,7 +1087,7 @@ if (registro && registro.detallesDoc3) {
             }
         }
 
-        function generarChecklistDocs(docs) {
+        function generarChecklistDocs(docs, registro = null) {
             const container = document.getElementById("contenedorDocs");
             const esConsulta = usuarioActual && usuarioActual.rol === "Consulta";
 
@@ -1099,7 +1096,7 @@ if (registro && registro.detallesDoc3) {
                 const tieneDoc = esUrlValida(url);
 
                 let panelContent = '';
-               if (k === 'doc1') {
+                if (k === 'doc1') {
                     panelContent = `
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                             <div>
@@ -1149,39 +1146,25 @@ if (registro && registro.detallesDoc3) {
                         </div>
                     `;
                 } else if (k === 'doc3') {
-    const sadeDoc3Val = (registro && registro.detallesDoc3 && registro.detallesDoc3.sadeRequerimiento)
-        ? String(registro.detallesDoc3.sadeRequerimiento).replace(/"/g, '&quot;')
-        : '';
-    const fechaDoc3Val = (registro && registro.detallesDoc3 && registro.detallesDoc3.fechaRequerimiento)
-        ? String(registro.detallesDoc3.fechaRequerimiento)
-        : '';
+                    const sadeDoc3Val = (registro && registro.detallesDoc3 && registro.detallesDoc3.sadeRequerimiento)
+                        ? String(registro.detallesDoc3.sadeRequerimiento).replace(/"/g, '&quot;')
+                        : '';
+                    const fechaDoc3Val = (registro && registro.detallesDoc3 && registro.detallesDoc3.fechaRequerimiento)
+                        ? String(registro.detallesDoc3.fechaRequerimiento)
+                        : '';
 
-    panelContent = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Requerimiento ORIP</label>
-                <input type="text" id="sade_req_orip_doc3" value="${sadeDoc3Val}" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-            </div>
-            <div>
-                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Requerimiento ORIP</label>
-                <input type="date" id="fecha_req_orip_doc3" value="${fechaDoc3Val}" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-            </div>
-        </div>
-    `;
-}
-    panelContent = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Requerimiento ORIP</label>
-                <input type="text" id="sade_req_orip_doc3" value="${sadeDoc3Val}" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-            </div>
-            <div>
-                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Requerimiento ORIP</label>
-                <input type="date" id="fecha_req_orip_doc3" value="${fechaDoc3Val}" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
-            </div>
-        </div>
-    `;
-}
+                    panelContent = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">SADE Requerimiento ORIP</label>
+                                <input type="text" id="sade_req_orip_doc3" value="${sadeDoc3Val}" ${esConsulta ? 'disabled' : ''} placeholder="Ingrese SADE..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Fecha Requerimiento ORIP</label>
+                                <input type="date" id="fecha_req_orip_doc3" value="${fechaDoc3Val}" ${esConsulta ? 'disabled' : ''} class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-vinotinto bg-slate-50">
+                            </div>
+                        </div>
+                    `;
                 } else if (k === 'doc4') {
                     panelContent = `
                         <div class="grid grid-cols-1 gap-3">
@@ -1360,7 +1343,7 @@ if (registro && registro.detallesDoc3) {
             document.getElementById("modalForm").classList.add("hidden");
         }
 
-       async function guardarRegistro(e) {
+        async function guardarRegistro(e) {
             e.preventDefault();
             if (usuarioActual && usuarioActual.rol === "Consulta") {
                 alert("Los usuarios con rol 'Consulta' no tienen permisos para guardar cambios.");
@@ -1427,9 +1410,9 @@ if (registro && registro.detallesDoc3) {
                     fechaFolio: document.getElementById("fecha_folio_doc2") ? document.getElementById("fecha_folio_doc2").value : ""
                 },
                 detallesDoc3: {
-    sadeRequerimiento: document.getElementById("sade_req_orip_doc3") ? document.getElementById("sade_req_orip_doc3").value.trim() : "",
-    fechaRequerimiento: document.getElementById("fecha_req_orip_doc3") ? document.getElementById("fecha_req_orip_doc3").value : ""
-},
+                    sadeRequerimiento: document.getElementById("sade_req_orip_doc3") ? document.getElementById("sade_req_orip_doc3").value.trim() : "",
+                    fechaRequerimiento: document.getElementById("fecha_req_orip_doc3") ? document.getElementById("fecha_req_orip_doc3").value : ""
+                },
                 extrasDocs: extrasDocsPayload
             };
 
@@ -1478,3 +1461,4 @@ if (registro && registro.detallesDoc3) {
     </script>
 </body>
 </html>
+                
